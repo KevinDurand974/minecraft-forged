@@ -1,0 +1,50 @@
+@import "tailwindcss/base";
+@import "tailwindcss/components";
+@import "tailwindcss/utilities";
+
+@layer components {
+  .footer-link {
+    @apply font-semibold small-case;
+  }
+  .small-case {
+    font-variant: small-caps;
+  }
+  .text-shadow {
+    text-shadow: 2px 2px 2px black;
+  }
+  .home-navigation-text {
+    @apply absolute flex justify-center items-center h-full w-full flex-wrap text-6xl text-center font-extrabold italic text-gray-200 small-case text-shadow;
+  }
+}
+
+body {
+  @apply bg-primary text-normal;
+}
+
+*,
+*:before,
+*:after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: Montserrat, Roboto, -apple-system, sans-serif;
+}
+html,
+body {
+  width: 100%;
+  min-height: 100vh;
+}
+a {
+  color: inherit;
+  text-decoration: none;
+}
+li,
+ul,
+ol {
+  list-style: none;
+  display: inline-block;
+}
+
+html {
+  scroll-behavior: smooth;
+}

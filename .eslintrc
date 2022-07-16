@@ -1,0 +1,17 @@
+{
+  "extends": ["next/core-web-vitals"],
+  "plugins": ["simple-import-sort", "prettier"],
+  "settings": {
+    "import/resolver": {
+      "node": {
+        "paths": ["."],
+        "extensions": [".ts", ".tsx"]
+      }
+    }
+  },
+  "rules": {
+    "prettier/prettier": ["error", {}, { "usePrettierrc": true }],
+    "simple-import-sort/imports": "error",
+    "simple-import-sort/exports": "error"
+  }
+}
