@@ -5,8 +5,8 @@ type Props = {
 };
 
 const ScrollToTop: React.FC<Props> = ({ className = "" }) => {
-  const [offset, setOffset] = useState(window.scrollY);
-  const [viewportHeight, setViewportHeight] = useState(window.innerHeight);
+  const [offset, setOffset] = useState(0);
+  const [viewportHeight, setViewportHeight] = useState(0);
   const [bodyHeight, setBodyHeight] = useState(0);
 
   const handleClick = () => {
