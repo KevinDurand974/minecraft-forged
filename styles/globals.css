@@ -15,6 +15,9 @@
   .home-navigation-text {
     @apply absolute flex justify-center items-center h-full w-full flex-wrap text-6xl text-center font-extrabold italic text-gray-200 small-case text-shadow;
   }
+  .btn-filter {
+    @apply font-semibold bg-secondary text-normal border-1 rounded-full px-4 py-2 shadow-xs shadow-normal flex gap-2 transition duration-100 hover:text-accent hover:border-accent hover:shadow-accent hover:bg-tertiary;
+  }
 }
 
 body {

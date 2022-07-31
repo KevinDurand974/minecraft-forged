@@ -25,6 +25,22 @@ module.exports = {
       fontSize: {
         "6.5xl": ["4rem", { lineHeight: "1" }],
       },
+      boxShadow: {
+        xs: "0 0 3px rgb(0 0 0 / 0.1)",
+      },
+      keyframes: {
+        sized: {
+          "0%": {
+            transform: "scale(0.2)",
+          },
+          "100%": {
+            transform: "scale(1)",
+          },
+        },
+      },
+      animation: {
+        "hover-sized": "sized 0.15s ease-out",
+      },
     },
   },
   plugins: [],
