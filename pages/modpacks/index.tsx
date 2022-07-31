@@ -1,10 +1,9 @@
 import Background from "@components/Background";
-import Packs from "@components/lists/Pack";
+import Modpack from "@components/lists/Modpack";
 import { Mod } from "@CustomTypes/curseforge";
 import axios from "axios";
 import { NextPage } from "next";
 import Head from "next/head";
-import Image from "next/image";
 import { Fragment, useEffect, useState } from "react";
 
 type Props = {
@@ -49,7 +48,7 @@ const CategoriePage: NextPage<Props> = ({ modpacks }) => {
 
         <div className="p-6 grid grid-cols-8 gap-6 m-auto w-fit">
           {modpacks.map(pack => (
-            <Packs pack={pack} key={pack.id} />
+            <Modpack pack={pack} key={pack.id} />
           ))}
         </div>
       </section>
