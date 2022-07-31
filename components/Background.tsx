@@ -16,6 +16,7 @@ const Background: FC<Props> = ({ num = "0" }) => {
         src={source}
         alt="Random background"
         layout="fill"
+        priority
         className="fixed w-full h-[100vh] pointer-events-none top-0 object-cover opacity-60 blur-md"
       />
       <div className="fixed w-full top-0 h-full bg-gradient-to-b from-transparent via-primary to-primary" />
