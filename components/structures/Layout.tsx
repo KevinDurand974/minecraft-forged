@@ -1,4 +1,4 @@
-import { ChildrenProps } from "@CustomTypes";
+import { ChildrenProps } from "@forged/types";
 import Head from "next/head";
 import { FC, Fragment } from "react";
 

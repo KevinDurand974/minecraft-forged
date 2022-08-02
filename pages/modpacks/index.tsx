@@ -1,6 +1,7 @@
 import Background from "@components/Background";
 import Modpack from "@components/lists/Modpack";
-import { Mod } from "@CustomTypes/curseforge";
+import { getModpacks } from "@forged/curseforge/modpack";
+import { Mod } from "@forged/types";
 import axios from "axios";
 import { NextPage } from "next";
 import Head from "next/head";
@@ -58,26 +59,15 @@ const CategoriePage: NextPage<Props> = ({ modpacks }) => {
 };
 
 export const getStaticProps = async () => {
-  const res = await axios.get(`https://api.curseforge.com/v1/mods/search`, {
-    headers: {
-      "x-api-key":
-        "$2a$10$kfm3Opp19g.ZsRMVw/o06eB.tG8cwgz08YcDtWwhfVCgDR2y3XC8i",
-    },
-    params: {
-      gameId: 432,
-      classId: 4471,
-      sortField: 2,
-      sortOrder: "desc",
-    },
-  });
+  const res = await getModpacks();
 
-  if (!res.data) return { notFound: true };
+  if (!res) return { notFound: true };
 
-  const packs: Mod[] = res.data.data;
+  const { data } = res;
 
   return {
     props: {
-      modpacks: packs,
+      modpacks: data,
     },
     revalidate: 3600,
   };

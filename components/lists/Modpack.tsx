@@ -1,4 +1,4 @@
-import { Mod } from "@CustomTypes/curseforge";
+import { Mod } from "@forged/types";
 import Image from "next/image";
 import { FC } from "react";
 
