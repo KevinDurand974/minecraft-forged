@@ -1,11 +1,10 @@
 import Background from "@components/Background";
 import Modpack from "@components/lists/Modpack";
-import { getModpacks } from "@forged/curseforge/modpack";
+import { getModpacks } from "@forged/curseforge";
 import { Mod } from "@forged/types";
-import axios from "axios";
 import { NextPage } from "next";
 import Head from "next/head";
-import { Fragment, useEffect, useState } from "react";
+import { Fragment } from "react";
 
 type Props = {
   modpacks: Mod[];

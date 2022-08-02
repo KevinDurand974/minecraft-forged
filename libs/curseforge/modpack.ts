@@ -1,4 +1,3 @@
-import { HttpError } from "@forged/Errors";
 import {
   ModLoaderType,
   ModsSearchSortField,
@@ -11,16 +10,23 @@ import { baseApi } from ".";
 const modpackCategory = 4471;
 
 interface GetModpackParams {
-  sortField: ModsSearchSortField;
-  sortOrder: SortOrder;
+  sortField?: ModsSearchSortField;
+  sortOrder?: SortOrder;
+  index?: number;
   modLoader?: ModLoaderType;
   gameVersion?: string;
 }
 
 export const getModpacks = async (
-  args: GetModpackParams = { sortField: 2, sortOrder: "desc" }
+  args?: GetModpackParams
 ): Promise<SearchModsResponse | null> => {
-  const params = { classId: modpackCategory, ...args };
+  const params = {
+    classId: modpackCategory,
+    sortField: 2,
+    sortOrder: "desc",
+    index: 0,
+    ...args,
+  };
   const response = await baseApi.get("mods/search", { params });
   const data: SearchModsResponse = response.data;
 
