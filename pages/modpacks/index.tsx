@@ -1,6 +1,7 @@
+import { gql } from "@apollo/client";
 import Background from "@components/Background";
 import Modpack from "@components/lists/Modpack";
-import { getModpacks } from "@forged/curseforge";
+import { client } from "@forged/apollo";
 import { Mod } from "@forged/types";
 import { NextPage } from "next";
 import Head from "next/head";
@@ -58,15 +59,27 @@ const CategoriePage: NextPage<Props> = ({ modpacks }) => {
 };
 
 export const getStaticProps = async () => {
-  const res = await getModpacks();
+  const { data } = await client.query({
+    query: gql`
+      query FindMany {
+        findMany {
+          id
+          name
+          logo {
+            thumbnailUrl
+          }
+        }
+      }
+    `,
+  });
 
-  if (!res) return { notFound: true };
+  const packs: Mod[] = data.findMany;
 
-  const { data } = res;
+  if (!packs.length) return { notFound: true };
 
   return {
     props: {
-      modpacks: data,
+      modpacks: packs,
     },
     revalidate: 3600,
   };

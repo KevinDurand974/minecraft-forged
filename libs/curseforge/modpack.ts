@@ -34,3 +34,18 @@ export const getModpacks = async (
 
   return data;
 };
+
+export const testModpack = async (args: any = null) => {
+  const params = {
+    classId: modpackCategory,
+    sortField: 2,
+    sortOrder: "desc",
+    modLoader: 4,
+    gameVersion: "1.12.2",
+    searchFilter: "nirvana",
+  };
+  const res = await baseApi.get("mods/search", { params });
+  const data: SearchModsResponse = res.data;
+  if (!data) return null;
+  return data;
+};

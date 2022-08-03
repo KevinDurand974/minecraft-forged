@@ -182,7 +182,7 @@ export interface GameAssets {
 
 export interface GameVersionsByType {
   type: number;
-  verions: string[];
+  versions: string[];
 }
 
 export enum GameVersionStatus {

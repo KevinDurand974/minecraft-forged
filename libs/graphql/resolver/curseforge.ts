@@ -1,5 +1,6 @@
 import { getModpacks } from "@forged/curseforge";
-import { Arg, Args, Query, Resolver } from "type-graphql";
+import { getMinecraftVersionList } from "@forged/curseforge/version";
+import { Arg, Query, Resolver } from "type-graphql";
 
 import { ModpackInput } from "../inputs";
 import { Mod } from "../schema/curseforge";
@@ -11,6 +12,7 @@ export class ModpackResolver {
     @Arg("args", type => ModpackInput, { nullable: true }) args: ModpackInput
   ): Promise<Mod[]> {
     const res = await getModpacks(args);
+    await getMinecraftVersionList();
     if (!res?.data.length) return [];
     return res.data;
   }
