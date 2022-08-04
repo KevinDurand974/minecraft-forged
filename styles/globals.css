@@ -20,34 +20,87 @@
   }
 }
 
+@layer base {
+  /* Animation Speed */
+  .speed-xs {
+    animation-duration: 0.5s;
+  }
+  .speed-sm {
+    animation-duration: 1s;
+  }
+  .speed-md {
+    animation-duration: 2s;
+  }
+  .speed-lg {
+    animation-duration: 3s;
+  }
+  .speed-xl {
+    animation-duration: 4s;
+  }
+
+  /* Animation Timing */
+  .timing-ping {
+    animation-timing-function: cubic-bezier(0, 0, 0.2, 1);
+  }
+  .timing-pulse {
+    animation-timing-function: cubic-bezier(0.4, 0, 0.6, 1);
+  }
+  .timing-linear {
+    animation-timing-function: linear;
+  }
+  .timing-ease {
+    animation-timing-function: ease;
+  }
+  .timing-ease-i {
+    animation-timing-function: ease-in;
+  }
+  .timing-ease-o {
+    animation-timing-function: ease-out;
+  }
+  .timing-ease-io {
+    animation-timing-function: ease-in-out;
+  }
+
+  /* Animation Iteration */
+  .iteration-infinite {
+    animation-iteration-count: infinite;
+  }
+  .iteration-one {
+    animation-iteration-count: 1;
+  }
+  .iteration-two {
+    animation-iteration-count: 2;
+  }
+
+  /* Animation Name */
+  .anim-spin-name {
+    animation-name: spin;
+  }
+  .anim-ping-name {
+    animation-name: ping;
+  }
+  .anim-pulse-name {
+    animation-name: pulse;
+  }
+  .anim-bounce-name {
+    animation-name: bounce;
+  }
+
+  /* Animation */
+  .animation-spin {
+    @apply anim-spin-name timing-linear iteration-infinite;
+  }
+  .animation-ping {
+    @apply anim-ping-name timing-ping iteration-infinite;
+  }
+  .animation-pulse {
+    @apply anim-pulse-name timing-pulse iteration-infinite;
+  }
+  .animation-bounce {
+    @apply anim-bounce-name iteration-infinite;
+  }
+}
+
 body {
   @apply bg-primary text-normal;
-}
-
-*,
-*:before,
-*:after {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-  font-family: Montserrat, Roboto, -apple-system, sans-serif;
-}
-html,
-body {
-  width: 100%;
-  min-height: 100vh;
-}
-a {
-  color: inherit;
-  text-decoration: none;
-}
-li,
-ul,
-ol {
-  list-style: none;
-  display: inline-block;
-}
-
-html {
-  scroll-behavior: smooth;
 }

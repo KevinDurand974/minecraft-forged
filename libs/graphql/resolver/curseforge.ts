@@ -1,19 +1,20 @@
 import { getModpacks } from "@forged/curseforge";
-import { getMinecraftVersionList } from "@forged/curseforge/version";
 import { Arg, Query, Resolver } from "type-graphql";
 
 import { ModpackInput } from "../inputs";
-import { Mod } from "../schema/curseforge";
+import { Mods } from "../schema/curseforge";
 
-@Resolver(Mod)
+@Resolver(Mods)
 export class ModpackResolver {
-  @Query(() => [Mod])
+  @Query(() => Mods)
   async findMany(
     @Arg("args", type => ModpackInput, { nullable: true }) args: ModpackInput
-  ): Promise<Mod[]> {
+  ): Promise<Mods> {
     const res = await getModpacks(args);
-    await getMinecraftVersionList();
-    if (!res?.data.length) return [];
-    return res.data;
+    if (!res?.data.length) return { mods: [] };
+    return {
+      mods: res.data,
+      pagination: res.pagination,
+    };
   }
 }

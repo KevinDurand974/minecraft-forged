@@ -8,7 +8,7 @@ interface Props {
 
 const Modpack: FC<Props> = ({ pack }) => {
   return (
-    <div key={pack.id} className="bg-tertiary h-48 w-48 m-auto relative group">
+    <div className="bg-tertiary h-48 w-48 m-auto relative group">
       <h3 className="absolute bottom-0 left-0 p-2 z-10 bg-black bg-opacity-90 font-bold w-full max-h-full overflow-hidden text-ellipsis">
         {pack.name}
       </h3>

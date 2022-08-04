@@ -40,6 +40,7 @@ module.exports = {
       },
       animation: {
         "hover-sized": "sized 0.15s ease-out",
+        "pulse-fast": "pulse 1s cubic-bezier(0.4, 0, 0.6, 1) infinite",
       },
     },
   },

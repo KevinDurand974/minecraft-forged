@@ -166,6 +166,21 @@ export class FileDependency {
 }
 
 @ObjectType()
+export class Pagination {
+  @Field(type => Int)
+  index!: number;
+
+  @Field(type => Int)
+  pageSize!: number;
+
+  @Field(type => Int)
+  resultCount!: number;
+
+  @Field(type => Int)
+  totalCount!: number;
+}
+
+@ObjectType()
 export class Mod {
   @Field(type => Int)
   id!: number;
@@ -226,4 +241,13 @@ export class Mod {
 
   @Field(type => Int)
   gamePopularityRank!: number;
+}
+
+@ObjectType()
+export class Mods {
+  @Field(type => [Mod])
+  mods!: Mod[];
+
+  @Field(type => Pagination, { nullable: true })
+  pagination?: Pagination;
 }
