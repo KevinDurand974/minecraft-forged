@@ -37,10 +37,25 @@ module.exports = {
             transform: "scale(1)",
           },
         },
+        fadeOutDown: {
+          "0%": {
+            "transform-origin": "left center",
+            overflow: "hidden",
+            opacity: 0,
+            height: 0,
+          },
+          "100%": {
+            "transform-origin": "left center",
+            overflow: "hidden",
+            height: "100%",
+            opacity: "100%",
+          },
+        },
       },
       animation: {
         "hover-sized": "sized 0.15s ease-out",
         "pulse-fast": "pulse 1s cubic-bezier(0.4, 0, 0.6, 1) infinite",
+        fadeOutDown: "fadeOutDown 500ms ease-out 1",
       },
     },
   },

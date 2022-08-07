@@ -5,7 +5,7 @@ import {
   SortOrder,
 } from "@forged/types";
 
-import { baseApi } from ".";
+import { baseApi, maxItemPerPage } from ".";
 
 const modpackCategory = 4471;
 
@@ -25,6 +25,7 @@ export const getModpacks = async (
     sortField: 2,
     sortOrder: "desc",
     index: 0,
+    pageSize: maxItemPerPage,
     ...args,
   };
   const response = await baseApi.get("mods/search", { params });

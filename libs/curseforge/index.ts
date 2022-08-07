@@ -17,8 +17,9 @@ export const baseApiClean = axios.create({
   },
 });
 
-export const maxPage = 199;
-export const maxItemPerPage = maxPage * 50;
+export const maxPage = 499;
+export const maxItemPerPage = 20;
+export const maxItemForAllPage = maxPage * maxItemPerPage;
 
 export * from "./modpack";
 export * from "./version";
