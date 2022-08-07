@@ -18,4 +18,25 @@ export class ModpackInput {
 
   @Field(type => String, { nullable: true })
   gameVersion!: string;
+
+  @Field(type => Int, { nullable: true })
+  gameId!: number;
+
+  @Field(type => Int, { nullable: true })
+  classId!: number;
+
+  @Field(type => Int, { nullable: true })
+  categoryId!: number;
+
+  @Field(type => String, { nullable: true })
+  searchFilter!: string;
+
+  @Field(type => Int, { nullable: true })
+  gameVersionTypeId!: number;
+
+  @Field(type => String, { nullable: true })
+  slug!: string;
+
+  @Field(type => Int, { nullable: true })
+  pageSize!: number;
 }

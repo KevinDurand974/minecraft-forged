@@ -1,6 +1,7 @@
 import {
   ModLoaderType,
   ModsSearchSortField,
+  SearchArgs,
   SearchModsResponse,
   SortOrder,
 } from "@forged/types";
@@ -9,16 +10,8 @@ import { baseApi, maxItemPerPage } from ".";
 
 const modpackCategory = 4471;
 
-interface GetModpackParams {
-  sortField?: ModsSearchSortField;
-  sortOrder?: SortOrder;
-  index?: number;
-  modLoader?: ModLoaderType;
-  gameVersion?: string;
-}
-
 export const getModpacks = async (
-  args?: GetModpackParams
+  args?: Partial<SearchArgs>
 ): Promise<SearchModsResponse | null> => {
   const params = {
     classId: modpackCategory,

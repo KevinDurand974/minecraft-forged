@@ -11,13 +11,13 @@ const HeaderMenu: FC<Props> = ({ showSearch }) => {
         {showSearch && (
           <li>
             <button className="text-xl bg-secondary rounded-[10px] p-2">
-              <i className="icon-outline-search" />
+              <i className="icon-iconly-outline-search" />
             </button>
           </li>
         )}
         <li>
           <button className="text-xl bg-secondary rounded-[10px] p-2">
-            <i className="icon-bold-one-user" />
+            <i className="icon-iconly-bold-profile" />
           </button>
         </li>
         <li>

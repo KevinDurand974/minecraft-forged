@@ -1,17 +1,22 @@
-import { gql, useQuery } from "@apollo/client";
+import { ApolloQueryResult, gql, useQuery } from "@apollo/client";
 import Background from "@components/Background";
 import Display from "@components/filters/Display";
 import ModLoader from "@components/filters/ModLoader";
 import SortBy from "@components/filters/SortBy";
 import Version from "@components/filters/Version";
 import Modpack from "@components/lists/Modpack";
+import ModpackRowLoading from "@components/lists/ModpackRowLoading";
+import ModpackTileLoading from "@components/lists/ModpackTileLoading";
+import Search from "@components/Search";
 import { client } from "@forged/apollo";
 import { maxItemForAllPage, maxItemPerPage } from "@forged/curseforge";
-import { Mod, Pagination } from "@forged/types";
+import { Mods } from "@forged/graphql/schema/curseforge";
+import { Mod, Pagination, SearchArgs } from "@forged/types";
 import { useOneScreen } from "hooks/UseOnScreen";
 import { NextPage } from "next";
 import Head from "next/head";
 import { Fragment, useEffect, useRef, useState } from "react";
+import { BehaviorSubject, debounceTime, Subject, Subscription } from "rxjs";
 
 type Props = {
   modpacks: Mod[];
@@ -49,47 +54,87 @@ const graphqlQuery = gql`
 `;
 
 const CategoriePage: NextPage<Props> = ({ modpacks, pagination, display }) => {
-  const [packLoaded, setPackNumber] = useState(0);
+  const [paginationInfo, setPaginationInfo] = useState(pagination);
+  const [packLoaded, setPackNumber] = useState(maxItemPerPage);
   const [packUpdate, setPackUpdate] = useState(false);
   const [modpackArray, setModpackArray] = useState(modpacks);
-  const packRef = useRef(null);
-  const isTriggerFetchVisible = useOneScreen(packRef, {
-    rootMargin: "200px 0px",
-    threshold: 0.1,
-  });
-  const { loading, fetchMore, refetch } = useQuery(graphqlQuery);
-  const [displayType, setDisplayType] = useState("rows");
+  const [displayType, setDisplayType] = useState(display);
+  const [queryArg, setQueryArg] = useState({
+    index: packLoaded,
+  } as Partial<SearchArgs>);
+  const [isNewSearchLoaded, setNewSearchLoaded] = useState(false);
 
+  const packRef = useRef(null);
+
+  const { refetch } = useQuery(graphqlQuery);
+
+  const isTriggerFetchVisible$ = new BehaviorSubject(
+    useOneScreen(packRef, {
+      rootMargin: "0px 0px 300px 0px",
+      threshold: 0.1,
+    })
+  ).asObservable();
+
+  // Fetch new {maxItemPerPage} Modpacks
   useEffect(() => {
-    const pageCount = pagination.totalCount;
-    if (
-      isTriggerFetchVisible &&
-      !loading &&
-      !packUpdate &&
-      pageCount > maxItemPerPage &&
-      packLoaded < maxItemForAllPage - maxItemPerPage
-    ) {
-      const run = async () => {
+    const sub$ = isTriggerFetchVisible$
+      .pipe(debounceTime(500))
+      .subscribe(async isVisible => {
+        const hasReachEnd = packLoaded >= maxItemForAllPage;
+        const hasMorePage = paginationInfo.totalCount >= maxItemPerPage;
+
+        if (!isVisible || packUpdate || hasReachEnd || !hasMorePage)
+          return false;
         setPackUpdate(true);
-        const { data } = await refetch({
-          args: { index: packLoaded + maxItemPerPage },
-        });
-        const packs: Mod[] = data.findMany.mods;
-        setModpackArray(modpackArray => [...modpackArray, ...packs]);
-        setPackNumber(num => num + maxItemPerPage);
-        setPackUpdate(false);
-      };
-      // run();
-    }
+        try {
+          const { data } = await refetch({
+            args: queryArg,
+          });
+          setModpackArray(oldPacks => [
+            ...oldPacks,
+            ...(data.findMany.mods as Mod[]),
+          ]);
+          setQueryArg(oldQuery => ({
+            ...oldQuery,
+            index: oldQuery.index! + maxItemPerPage,
+          }));
+          if (data.findMany.mods.length % 20 === 0) {
+            setPackNumber(num => num + maxItemPerPage);
+          } else {
+            setPackNumber(() => maxItemForAllPage + maxItemPerPage);
+          }
+          setPackUpdate(false);
+        } catch (err) {
+          setPackNumber(() => maxItemForAllPage + maxItemPerPage);
+          setPackUpdate(false);
+        }
+      });
+
+    return () => {
+      sub$.unsubscribe();
+    };
   }, [
-    fetchMore,
-    isTriggerFetchVisible,
-    loading,
+    isTriggerFetchVisible$,
     packLoaded,
     packUpdate,
-    pagination,
+    paginationInfo.totalCount,
+    queryArg,
     refetch,
   ]);
+
+  const handleNewSearch = async (queryNewArg: Partial<SearchArgs>) => {
+    setNewSearchLoaded(false);
+    setPackUpdate(true);
+    const { data } = await refetch({
+      args: queryNewArg,
+    });
+    setModpackArray(() => data.findMany.mods);
+    setPaginationInfo(() => data.findMany.pagination);
+    setQueryArg(() => ({ ...queryNewArg, index: maxItemPerPage }));
+    setPackNumber(() => 20);
+    setNewSearchLoaded(true);
+    setPackUpdate(false);
+  };
 
   return (
     <Fragment>
@@ -120,24 +165,15 @@ const CategoriePage: NextPage<Props> = ({ modpacks, pagination, display }) => {
           <SortBy />
         </div>
 
+        <Search fetchQuery={handleNewSearch} loaded={isNewSearchLoaded} />
+
         {displayType === "tiles" && (
-          <div className="max-w-screen-2xl py-4 grid grid-cols-7 gap-6 m-auto w-fit">
+          <div className="max-w-screen-2xl py-4 grid grid-cols-7 gap-6 m-auto">
             {modpackArray.map(pack => (
               <Modpack pack={pack} type="tiles" key={pack.id} />
             ))}
-            {packUpdate && (
-              <div
-                className="bg-tertiary h-48 w-48 m-auto relative group"
-                key="loading"
-              >
-                <h3 className="absolute bottom-0 left-0 p-2 z-10 bg-black bg-opacity-90 font-bold w-full tracking-wider">
-                  Loading...
-                </h3>
-                <div className="absolute w-full h-full text-[150px] flex justify-center items-center animation-spin speed-xl opacity-50">
-                  <i className="icon-media-repeat-v4" />
-                </div>
-              </div>
-            )}
+            {packUpdate &&
+              Array.from(Array(3)).map(k => <ModpackTileLoading key={k} />)}
           </div>
         )}
         {displayType === "rows" && (
@@ -145,14 +181,8 @@ const CategoriePage: NextPage<Props> = ({ modpacks, pagination, display }) => {
             {modpackArray.map(pack => (
               <Modpack pack={pack} type="rows" key={pack.id} />
             ))}
-            {packUpdate && (
-              <div className="bg-tertiary max-w-screen-2xl m-auto flex px-4 py-2 gap-4">
-                <div className="animation-spin speed-md">
-                  <i className="icon-media-repeat-v4" />
-                </div>
-                <h3 className="font-bold tracking-wider">Loading...</h3>
-              </div>
-            )}
+            {packUpdate &&
+              Array.from(Array(3)).map(k => <ModpackRowLoading key={k} />)}
           </div>
         )}
       </section>
@@ -174,7 +204,7 @@ export const getStaticProps = async () => {
     props: {
       modpacks: packs,
       pagination,
-      display: "rows",
+      display: "tiles",
     },
     revalidate: 3600,
   };
