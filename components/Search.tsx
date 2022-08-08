@@ -1,6 +1,12 @@
 import { SearchArgs } from "@forged/types";
 import { FC, useEffect, useState } from "react";
-import { BehaviorSubject, debounceTime, filter } from "rxjs";
+import {
+  BehaviorSubject,
+  combineLatestWith,
+  debounceTime,
+  filter,
+  map,
+} from "rxjs";
 
 interface Props {
   loaded: boolean;
@@ -11,30 +17,40 @@ const Search: FC<Props> = ({ loaded, fetchQuery }) => {
   const [oldSearch, setOldSearch] = useState("");
   const [search, setSearch] = useState("");
   const [isSearching, setIsSearching] = useState(loaded);
-  const subject$ = new BehaviorSubject(search).asObservable();
+  const search$ = new BehaviorSubject(search).asObservable();
+  const oldSearch$ = new BehaviorSubject(oldSearch).asObservable();
 
   useEffect(() => {
-    const sub$ = subject$
+    const sub$ = search$
       .pipe(
-        filter(search => search.length > 2),
-        filter(search => search !== oldSearch),
+        combineLatestWith(oldSearch$),
+        map(([search, old]) => ({ search, old })),
+        filter(({ search }) => search.length > 2),
+        filter(({ search, old }) => search !== old),
+        filter(() => !isSearching),
         debounceTime(500)
       )
-      .subscribe(search => {
-        if (oldSearch === search) return false;
+      .subscribe(({ search, old }) => {
+        if (old !== "" && old === search) return false;
         setIsSearching(true);
-        setOldSearch(search);
-        fetchQuery({ index: 0, searchFilter: search });
+        if (search !== "sclear" && old !== "osclear") {
+          setOldSearch(search);
+          fetchQuery({ index: 0, searchFilter: search });
+        } else {
+          setOldSearch("");
+          setSearch("");
+          fetchQuery({ index: 0 });
+        }
       });
 
     if (isSearching && loaded) setIsSearching(false);
 
     return () => sub$.unsubscribe();
-  }, [subject$, oldSearch, fetchQuery, isSearching, loaded]);
+  }, [search$, oldSearch, fetchQuery, isSearching, loaded, oldSearch$]);
 
   const handleReset = () => {
-    setSearch("");
-    setOldSearch("");
+    setSearch("sclear");
+    setOldSearch("osclear");
   };
 
   return (

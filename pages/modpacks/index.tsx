@@ -1,22 +1,21 @@
-import { ApolloQueryResult, gql, useQuery } from "@apollo/client";
+import { gql, useQuery } from "@apollo/client";
 import Background from "@components/Background";
-import Display from "@components/filters/Display";
-import ModLoader from "@components/filters/ModLoader";
-import SortBy from "@components/filters/SortBy";
-import Version from "@components/filters/Version";
-import Modpack from "@components/lists/Modpack";
-import ModpackRowLoading from "@components/lists/ModpackRowLoading";
-import ModpackTileLoading from "@components/lists/ModpackTileLoading";
+import { Display, ModLoader, SortBy, Version } from "@components/filters";
+import {
+  Modpack,
+  ModpackRowLoading,
+  ModpackRowNoResult,
+  ModpackTileLoading,
+} from "@components/lists";
 import Search from "@components/Search";
 import { client } from "@forged/apollo";
 import { maxItemForAllPage, maxItemPerPage } from "@forged/curseforge";
-import { Mods } from "@forged/graphql/schema/curseforge";
 import { Mod, Pagination, SearchArgs } from "@forged/types";
 import { useOneScreen } from "hooks/UseOnScreen";
 import { NextPage } from "next";
 import Head from "next/head";
 import { Fragment, useEffect, useRef, useState } from "react";
-import { BehaviorSubject, debounceTime, Subject, Subscription } from "rxjs";
+import { BehaviorSubject, debounceTime } from "rxjs";
 
 type Props = {
   modpacks: Mod[];
@@ -81,7 +80,7 @@ const CategoriePage: NextPage<Props> = ({ modpacks, pagination, display }) => {
       .pipe(debounceTime(500))
       .subscribe(async isVisible => {
         const hasReachEnd = packLoaded >= maxItemForAllPage;
-        const hasMorePage = paginationInfo.totalCount >= maxItemPerPage;
+        const hasMorePage = paginationInfo?.totalCount >= maxItemPerPage;
 
         if (!isVisible || packUpdate || hasReachEnd || !hasMorePage)
           return false;
@@ -117,7 +116,7 @@ const CategoriePage: NextPage<Props> = ({ modpacks, pagination, display }) => {
     isTriggerFetchVisible$,
     packLoaded,
     packUpdate,
-    paginationInfo.totalCount,
+    paginationInfo,
     queryArg,
     refetch,
   ]);
@@ -167,22 +166,28 @@ const CategoriePage: NextPage<Props> = ({ modpacks, pagination, display }) => {
 
         <Search fetchQuery={handleNewSearch} loaded={isNewSearchLoaded} />
 
-        {displayType === "tiles" && (
+        {!modpackArray.length && !packUpdate && <ModpackRowNoResult />}
+
+        {displayType === "tiles" && modpackArray.length && (
           <div className="max-w-screen-2xl py-4 grid grid-cols-7 gap-6 m-auto">
             {modpackArray.map(pack => (
               <Modpack pack={pack} type="tiles" key={pack.id} />
             ))}
             {packUpdate &&
-              Array.from(Array(3)).map(k => <ModpackTileLoading key={k} />)}
+              Array(3)
+                .fill(1)
+                .map((k, i) => <ModpackTileLoading key={k + "" + i} />)}
           </div>
         )}
-        {displayType === "rows" && (
+        {displayType === "rows" && modpackArray.length && (
           <div className="max-w-screen-2xl flex flex-col gap-4 m-auto w-full py-4">
             {modpackArray.map(pack => (
               <Modpack pack={pack} type="rows" key={pack.id} />
             ))}
             {packUpdate &&
-              Array.from(Array(3)).map(k => <ModpackRowLoading key={k} />)}
+              Array(3)
+                .fill(1)
+                .map((k, i) => <ModpackRowLoading key={k + "" + i} />)}
           </div>
         )}
       </section>
