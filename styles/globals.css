@@ -2,28 +2,37 @@
 @import "tailwindcss/components";
 @import "tailwindcss/utilities";
 
-@layer components {
-  .footer-link {
-    @apply font-semibold small-case;
-  }
+@layer base {
   .small-case {
     font-variant: small-caps;
   }
   .text-shadow {
     text-shadow: 2px 2px 2px black;
   }
+  .modpack-rows {
+    grid-template-columns: 8rem 1fr 18rem 3rem;
+  }
+  .modal-header {
+    grid-template-columns: 1fr 48px;
+  }
+}
+
+@layer components {
+  .footer-link {
+    @apply font-semibold small-case;
+  }
   .home-navigation-text {
     @apply absolute flex justify-center items-center h-full w-full flex-wrap text-6xl text-center font-extrabold italic text-gray-200 small-case text-shadow;
   }
   .btn-filter {
-    @apply font-semibold bg-secondary text-normal border-1 rounded-full px-4 py-2 shadow-xs shadow-normal flex gap-2 transition duration-100 hover:text-accent hover:border-accent hover:shadow-accent hover:bg-tertiary;
+    @apply font-semibold bg-secondary text-normal border rounded-full px-4 py-2 shadow-xs shadow-normal flex gap-2 transition duration-100 hover:text-accent hover:border-accent hover:shadow-accent hover:bg-tertiary;
   }
-  .modpack-rows {
-    grid-template-columns: 8rem 1fr 18rem 3rem;
+  .sidebar-hover:hover {
+    @apply bg-accent pr-8;
   }
 }
 
-@layer base {
+@layer utilities {
   /* Animation Speed */
   .speed-xs {
     animation-duration: 0.5s;
