@@ -20,7 +20,6 @@ import {
   DisplayFilter,
   GameVersion,
   Mod,
-  ModLoaderType,
   ModsSearchSortField,
   Pagination,
   SearchArgs,
@@ -187,20 +186,6 @@ const CategoriePage: NextPage<Props> = ({
     } catch (error) {
       console.log(error);
     }
-  };
-
-  const updateModpacklistOnFilterChange = async () => {
-    setNewSearchLoaded(false);
-    setPackUpdate(true);
-    console.log(queryArg);
-    const { data } = await refetch({
-      args: queryArg,
-    });
-    setModpackArray(() => data.getModpacks.mods);
-    setPaginationInfo(() => data.getModpacks.pagination);
-    setPackNumber(() => 20);
-    setNewSearchLoaded(true);
-    setPackUpdate(false);
   };
 
   // Handle Filter Choices
