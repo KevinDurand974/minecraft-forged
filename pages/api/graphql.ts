@@ -1,12 +1,16 @@
 import "reflect-metadata";
 
-import { ModpackResolver } from "@forged/graphql/resolver/curseforge";
+import {
+  ModLoaderResolver,
+  ModpackResolver,
+  VersionResolver,
+} from "@forged/graphql/resolver/curseforge";
 import { ApolloServer } from "apollo-server-micro";
 import Cors from "micro-cors";
 import { buildSchema } from "type-graphql";
 
 const schema = await buildSchema({
-  resolvers: [ModpackResolver],
+  resolvers: [ModpackResolver, VersionResolver, ModLoaderResolver],
 });
 
 const cors = Cors();
