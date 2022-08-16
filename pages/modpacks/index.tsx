@@ -189,23 +189,61 @@ const CategoriePage: NextPage<Props> = ({
     }
   };
 
+  const updateModpacklistOnFilterChange = async () => {
+    setNewSearchLoaded(false);
+    setPackUpdate(true);
+    console.log(queryArg);
+    const { data } = await refetch({
+      args: queryArg,
+    });
+    setModpackArray(() => data.getModpacks.mods);
+    setPaginationInfo(() => data.getModpacks.pagination);
+    setPackNumber(() => 20);
+    setNewSearchLoaded(true);
+    setPackUpdate(false);
+  };
+
   // Handle Filter Choices
   const handleFilterChoiceDisplay = (display: DisplayFilter) => {
     setFilters(pre => ({ ...pre, display }));
   };
-  const handleFilterChoiceVersion = (version: string) => {
+  const handleFilterChoiceVersion = async (version: string) => {
     setFilters(pre => ({ ...pre, version }));
     setQueryArg(pre => ({
       ...pre,
+      index: 0,
       gameVersion: version === "all" ? "" : version,
     }));
+    setPackUpdate(true);
+    setModpackArray([]);
+    setPackNumber(() => 20);
+    const { data } = await refetch({
+      args: {
+        ...queryArg,
+        index: 0,
+        gameVersion: version === "all" ? "" : version,
+      },
+    });
+    setModpackArray(() => data.getModpacks.mods);
+    setPaginationInfo(() => data.getModpacks.pagination);
+    setPackUpdate(false);
   };
-  const handleFilterChoiceSortBy = (sortby: ModsSearchSortField) => {
+  const handleFilterChoiceSortBy = async (sortby: ModsSearchSortField) => {
     setFilters(pre => ({ ...pre, sortby }));
     setQueryArg(pre => ({
       ...pre,
+      index: 0,
       sortField: sortby,
     }));
+    setPackUpdate(true);
+    setModpackArray([]);
+    setPackNumber(() => 20);
+    const { data } = await refetch({
+      args: { ...queryArg, index: 0, sortField: sortby },
+    });
+    setModpackArray(() => data.getModpacks.mods);
+    setPaginationInfo(() => data.getModpacks.pagination);
+    setPackUpdate(false);
   };
 
   return (
@@ -262,7 +300,7 @@ const CategoriePage: NextPage<Props> = ({
 
         {!modpackArray.length && !packUpdate && <ModpackRowNoResult />}
 
-        {getFilters.display === "tiles" && modpackArray.length && (
+        {getFilters.display === "tiles" && (
           <div className="max-w-screen-2xl py-4 grid grid-cols-7 gap-6 m-auto">
             {modpackArray.map(pack => (
               <Modpack pack={pack} type="tiles" key={pack.id} />
@@ -273,7 +311,7 @@ const CategoriePage: NextPage<Props> = ({
                 .map((k, i) => <ModpackTileLoading key={k + "" + i} />)}
           </div>
         )}
-        {getFilters.display === "rows" && modpackArray.length && (
+        {getFilters.display === "rows" && (
           <div className="max-w-screen-2xl flex flex-col gap-4 m-auto w-full py-4">
             {modpackArray.map(pack => (
               <Modpack pack={pack} type="rows" key={pack.id} />
