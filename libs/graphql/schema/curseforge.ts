@@ -1,3 +1,4 @@
+import { ModLoaderType } from "@forged/types";
 import { Field, Int, ObjectType } from "type-graphql";
 
 @ObjectType()
@@ -250,4 +251,34 @@ export class Mods {
 
   @Field(type => Pagination, { nullable: true })
   pagination?: Pagination;
+}
+
+@ObjectType()
+export class GameVersionType {
+  @Field(type => Int)
+  id!: number;
+
+  @Field(type => Int)
+  gameId!: number;
+
+  @Field(type => String)
+  name!: string;
+
+  @Field(type => String)
+  slug!: string;
+}
+
+@ObjectType()
+export class Version {
+  @Field(type => String)
+  version!: string;
+
+  @Field(type => [String])
+  list!: string[];
+}
+
+@ObjectType()
+export class ModLoader {
+  @Field(type => String)
+  name!: ModLoaderType;
 }

@@ -27,3 +27,5 @@ export interface SearchArgs {
   index: number;
   pageSize: number;
 }
+
+export type DisplayFilter = "tiles" | "rows";

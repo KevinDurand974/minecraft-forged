@@ -60,6 +60,6 @@ export const getMinecraftVersionList = async () => {
     );
   } catch (err) {
     console.error(err);
-    return null;
+    return [];
   }
 };

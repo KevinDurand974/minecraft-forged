@@ -21,5 +21,6 @@ export const maxPage = 499;
 export const maxItemPerPage = 20;
 export const maxItemForAllPage = maxPage * maxItemPerPage;
 
+export * from "./modloader";
 export * from "./modpack";
 export * from "./version";
