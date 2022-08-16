@@ -13,20 +13,38 @@ const modpackCategory = 4471;
 export const getModpacks = async (
   args?: Partial<SearchArgs>
 ): Promise<SearchModsResponse | null> => {
-  const params = {
-    classId: modpackCategory,
-    sortField: 2,
-    sortOrder: "desc",
-    index: 0,
-    pageSize: maxItemPerPage,
-    ...args,
-  };
-  const response = await baseApi.get("mods/search", { params });
-  const data: SearchModsResponse = response.data;
+  try {
+    const params = {
+      classId: modpackCategory,
+      sortField: 2,
+      sortOrder: "desc",
+      index: 0,
+      pageSize: maxItemPerPage,
+      ...args,
+    };
+    const response = await baseApi.get("mods/search", { params });
+    const data: SearchModsResponse = response.data;
 
-  if (!data) return null;
+    if (!data) return null;
 
-  return data;
+    const ddata = data.data.map(mod => {
+      const categories = mod.categories.map(cat => {
+        if (cat.slug === null || cat.slug === "") {
+          cat.slug = cat.name
+            .toLowerCase()
+            .replace(/\s/g, "")
+            .replace(/\W/, "-");
+        }
+        return cat;
+      });
+      return { ...mod, categories };
+    });
+
+    return { ...data, data: ddata };
+  } catch (err) {
+    console.error(err);
+    return null;
+  }
 };
 
 export const testModpack = async (args: any = null) => {

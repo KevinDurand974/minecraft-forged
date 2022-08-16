@@ -24,7 +24,7 @@ export class Category {
   @Field(type => String)
   name!: string;
 
-  @Field(type => String)
+  @Field(type => String, { nullable: true })
   slug!: string;
 
   @Field(type => String)

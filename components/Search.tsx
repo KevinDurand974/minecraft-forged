@@ -16,6 +16,7 @@ interface Props {
 const Search: FC<Props> = ({ loaded, fetchQuery }) => {
   const [oldSearch, setOldSearch] = useState("");
   const [search, setSearch] = useState("");
+  const [isClear, clearSearch] = useState(false);
   const [isSearching, setIsSearching] = useState(loaded);
   const search$ = new BehaviorSubject(search).asObservable();
   const oldSearch$ = new BehaviorSubject(oldSearch).asObservable();
@@ -25,32 +26,40 @@ const Search: FC<Props> = ({ loaded, fetchQuery }) => {
       .pipe(
         combineLatestWith(oldSearch$),
         map(([search, old]) => ({ search, old })),
-        filter(({ search }) => search.length > 2),
-        filter(({ search, old }) => search !== old),
+        // filter(({ search }) => search.length > 2),
         filter(() => !isSearching),
         debounceTime(500)
       )
       .subscribe(({ search, old }) => {
-        if (old !== "" && old === search) return false;
-        setIsSearching(true);
-        if (search !== "sclear" && old !== "osclear") {
-          setOldSearch(search);
-          fetchQuery({ index: 0, searchFilter: search });
-        } else {
-          setOldSearch("");
-          setSearch("");
-          fetchQuery({ index: 0 });
+        if (search === "" && old === "" && isClear) {
+          setIsSearching(true);
+          clearSearch(false);
+          return fetchQuery({ index: 0, searchFilter: "" });
         }
+        if (old === search) return false;
+        if (search.length <= 2) return false;
+        setIsSearching(true);
+        setOldSearch(search);
+        fetchQuery({ index: 0, searchFilter: search });
       });
 
     if (isSearching && loaded) setIsSearching(false);
 
     return () => sub$.unsubscribe();
-  }, [search$, oldSearch, fetchQuery, isSearching, loaded, oldSearch$]);
+  }, [
+    search$,
+    oldSearch,
+    fetchQuery,
+    isSearching,
+    loaded,
+    oldSearch$,
+    isClear,
+  ]);
 
   const handleReset = () => {
-    setSearch("sclear");
-    setOldSearch("osclear");
+    setOldSearch("");
+    setSearch("");
+    clearSearch(true);
   };
 
   return (

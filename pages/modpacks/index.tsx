@@ -85,9 +85,10 @@ const CategoriePage: NextPage<Props> = ({
   const [packLoaded, setPackNumber] = useState(maxItemPerPage);
   const [packUpdate, setPackUpdate] = useState(false);
   const [modpackArray, setModpackArray] = useState(modpacks);
-  const [version, setVersion] = useState("all");
   const [queryArg, setQueryArg] = useState({
     index: packLoaded,
+    sortField: 2,
+    gameVersion: "",
   } as Partial<SearchArgs>);
   const [isNewSearchLoaded, setNewSearchLoaded] = useState(false);
   const [showFilterSiedbar, setShowFilterSidebar] = useState(false);
@@ -142,7 +143,7 @@ const CategoriePage: NextPage<Props> = ({
             ...oldQuery,
             index: oldQuery.index! + maxItemPerPage,
           }));
-          if (data.getModpacks.mods.length % 20 === 0) {
+          if (data.getModpacks.mods.length % maxItemPerPage === 0) {
             setPackNumber(num => num + maxItemPerPage);
           } else {
             setPackNumber(() => maxItemForAllPage + maxItemPerPage);
@@ -168,23 +169,25 @@ const CategoriePage: NextPage<Props> = ({
 
   // Handle Search
   const handleNewSearch = async (queryNewArg: Partial<SearchArgs>) => {
-    setNewSearchLoaded(false);
-    setPackUpdate(true);
-    const { data } = await refetch({
-      args: queryNewArg,
-    });
-    setModpackArray(() => data.getModpacks.mods);
-    setPaginationInfo(() => data.getModpacks.pagination);
-    setQueryArg(() => ({ ...queryNewArg, index: maxItemPerPage }));
-    setPackNumber(() => 20);
-    setNewSearchLoaded(true);
-    setPackUpdate(false);
-  };
+    try {
+      setNewSearchLoaded(false);
+      setPackUpdate(true);
 
-  // Refetch on Filter Change
-  useEffect(() => {
-    console.log(version);
-  }, [version]);
+      const newQueryArg = { ...queryArg, ...queryNewArg };
+
+      const { data } = await refetch({
+        args: newQueryArg,
+      });
+      setModpackArray(() => data.getModpacks.mods);
+      setPaginationInfo(() => data.getModpacks.pagination);
+      setQueryArg(() => ({ ...newQueryArg, index: maxItemPerPage }));
+      setPackNumber(() => 20);
+      setNewSearchLoaded(true);
+      setPackUpdate(false);
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   // Handle Filter Choices
   const handleFilterChoiceDisplay = (display: DisplayFilter) => {
@@ -192,9 +195,17 @@ const CategoriePage: NextPage<Props> = ({
   };
   const handleFilterChoiceVersion = (version: string) => {
     setFilters(pre => ({ ...pre, version }));
+    setQueryArg(pre => ({
+      ...pre,
+      gameVersion: version === "all" ? "" : version,
+    }));
   };
   const handleFilterChoiceSortBy = (sortby: ModsSearchSortField) => {
     setFilters(pre => ({ ...pre, sortby }));
+    setQueryArg(pre => ({
+      ...pre,
+      sortField: sortby,
+    }));
   };
 
   return (
