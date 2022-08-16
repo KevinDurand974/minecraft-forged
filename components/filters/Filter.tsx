@@ -4,18 +4,21 @@ interface Props {
   title: string;
   value?: string;
   children?: ReactNode;
+  onClick: () => void;
   className?: string;
 }
 
-const Filter: FC<Props> = ({ title, value, children, className }) => {
+const Filter: FC<Props> = ({ title, value, children, className, onClick }) => {
+  const handleClick = () => onClick();
+
   const style =
     className ||
     "text-xl small-case bg-tertiary px-6 py-2 rounded-xl shadow-xs shadow-tertiary";
   return (
-    <span className={style}>
+    <button className={style} onClick={handleClick}>
       {title} ▸ {value}
       {children}
-    </span>
+    </button>
   );
 };
 
