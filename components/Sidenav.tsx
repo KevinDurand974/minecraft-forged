@@ -1,6 +1,6 @@
 import { ChildrenProps } from "@forged/types";
+import { useDisableBodyScroll } from "hooks/useDisableBodyScroll";
 import { FC, useEffect, useState } from "react";
-import ReactDOM from "react-dom";
 
 interface Props extends ChildrenProps {
   show: boolean;
@@ -10,6 +10,8 @@ interface Props extends ChildrenProps {
 }
 
 const Sidenav: FC<Props> = ({ show, onClose, children, title, className }) => {
+  useDisableBodyScroll(show);
+
   const handleCloseSidebar = (e: any) => {
     e.preventDefault();
     if (onClose) onClose();
@@ -17,7 +19,7 @@ const Sidenav: FC<Props> = ({ show, onClose, children, title, className }) => {
 
   return (
     <div
-      className={`fixed w-screen h-screen top-[76px] left-0 z-100 ${
+      className={`fixed w-screen h-screen top-0 left-0 z-100 ${
         !show && "pointer-events-none"
       }`}
     >
@@ -28,7 +30,7 @@ const Sidenav: FC<Props> = ({ show, onClose, children, title, className }) => {
         onClick={handleCloseSidebar}
       />
       <div
-        className={`bg-primary min-w-xs h-full fixed top-[76px] left-0 flex flex-col gap-2 transition duration-300 ${
+        className={`bg-primary min-w-xs h-full fixed top-0 max-h-screen overflow-auto left-0 flex flex-col gap-2 transition duration-300 ${
           !show && "-translate-x-full"
         }`}
       >
@@ -46,7 +48,7 @@ const Sidenav: FC<Props> = ({ show, onClose, children, title, className }) => {
             {title}
           </h2>
         )}
-        <main className={className}>{children}</main>
+        <main className={`${className + " "}`}>{children}</main>
       </div>
     </div>
   );

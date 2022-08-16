@@ -8,7 +8,11 @@ import {
   ModpackTileLoading,
 } from "@components/lists";
 import Search from "@components/Search";
-import { SidebarDisplay, SidebarVersion } from "@components/sidebar";
+import {
+  SidebarDisplay,
+  SidebarSortBy,
+  SidebarVersion,
+} from "@components/sidebar";
 import Sidenav from "@components/Sidenav";
 import { client } from "@forged/apollo";
 import { maxItemForAllPage, maxItemPerPage } from "@forged/curseforge";
@@ -36,7 +40,6 @@ interface Props {
 interface Filters {
   display: DisplayFilter;
   version: string;
-  modloader: ModLoaderType;
   sortby: ModsSearchSortField;
 }
 
@@ -87,17 +90,23 @@ const CategoriePage: NextPage<Props> = ({
     index: packLoaded,
   } as Partial<SearchArgs>);
   const [isNewSearchLoaded, setNewSearchLoaded] = useState(false);
-  const [showFilterModal, setFilterShowModal] = useState(false);
-  const [showDisplay, setShowDisplay] = useState(false);
-  const [showVersion, setShowVersion] = useState(false);
-  const [showModLoader, setShowModLoader] = useState(false);
-  const [showSortBy, setShowSortBy] = useState(false);
+  const [showFilterSiedbar, setShowFilterSidebar] = useState(false);
   const [getFilters, setFilters] = useState({
     display: "rows",
     version: "all",
-    modloader: 0,
     sortby: 2,
   } as Filters);
+
+  const SortField = [
+    "Featured",
+    "Popularity",
+    "Last Updated",
+    "Name",
+    "Author",
+    "Total Downloads",
+    "Category",
+    "Game Version",
+  ] as const;
 
   const packRef = useRef(null);
 
@@ -177,34 +186,15 @@ const CategoriePage: NextPage<Props> = ({
     console.log(version);
   }, [version]);
 
-  const handleCloseModal = (type: string, bool: boolean = false) => {
-    setShowDisplay(false);
-    setShowVersion(false);
-    setShowModLoader(false);
-    setShowSortBy(false);
-    if (bool)
-      switch (type) {
-        case "display":
-          setShowDisplay(true);
-          break;
-        case "version":
-          setShowVersion(true);
-          break;
-        case "modloader":
-          setShowModLoader(true);
-          break;
-        case "sortby":
-          setShowSortBy(true);
-          break;
-      }
-    console.log(showDisplay);
-  };
-
+  // Handle Filter Choices
   const handleFilterChoiceDisplay = (display: DisplayFilter) => {
     setFilters(pre => ({ ...pre, display }));
   };
   const handleFilterChoiceVersion = (version: string) => {
     setFilters(pre => ({ ...pre, version }));
+  };
+  const handleFilterChoiceSortBy = (sortby: ModsSearchSortField) => {
+    setFilters(pre => ({ ...pre, sortby }));
   };
 
   return (
@@ -224,7 +214,7 @@ const CategoriePage: NextPage<Props> = ({
           <div className="flex gap-4 justify-center">
             <button
               className="btn-filter text-xl"
-              onClick={() => setFilterShowModal(true)}
+              onClick={() => setShowFilterSidebar(true)}
             >
               <i className="icon-bold-setting" />
               <span>Change Filter</span>
@@ -233,12 +223,28 @@ const CategoriePage: NextPage<Props> = ({
         </div>
 
         <div className="flex justify-evenly max-w-screen-2xl mx-auto mb-10">
-          <Filter title="Display" onClick={() => {}}>
-            <i className="icon-rows" />
+          <Filter title="Display" onClick={() => setShowFilterSidebar(true)}>
+            {getFilters.display === "rows" && (
+              <span>
+                Rows <i className="icon-rows" />
+              </span>
+            )}
+            {getFilters.display === "tiles" && (
+              <span>
+                Tiles <i className="icon-tiles" />
+              </span>
+            )}
           </Filter>
-          <Filter title="Version" value="All" onClick={() => {}} />
-          <Filter title="Mod Loader" value="All" onClick={() => {}} />
-          <Filter title="Sort By" value="Popularity" onClick={() => {}} />
+          <Filter
+            title="Version"
+            value={getFilters.version}
+            onClick={() => setShowFilterSidebar(true)}
+          />
+          <Filter
+            title="Sort By"
+            value={SortField[getFilters.sortby - 1]}
+            onClick={() => setShowFilterSidebar(true)}
+          />
         </div>
 
         <Search fetchQuery={handleNewSearch} loaded={isNewSearchLoaded} />
@@ -270,9 +276,9 @@ const CategoriePage: NextPage<Props> = ({
       </section>
       <div ref={packRef} className="invisible" />
       <Sidenav
-        show={showFilterModal}
+        show={showFilterSiedbar}
         title="Filters"
-        onClose={() => setFilterShowModal(false)}
+        onClose={() => setShowFilterSidebar(false)}
         className="flex flex-col gap-3"
       >
         <SidebarDisplay
@@ -283,6 +289,10 @@ const CategoriePage: NextPage<Props> = ({
           onClick={handleFilterChoiceVersion}
           current={getFilters.version}
           minecraftVersions={minecraftVersions}
+        />
+        <SidebarSortBy
+          onClick={handleFilterChoiceSortBy}
+          current={getFilters.sortby}
         />
       </Sidenav>
       <Background num="11" />
