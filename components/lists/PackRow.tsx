@@ -6,14 +6,21 @@ import React, { FC, useState } from "react";
 
 interface Props {
   pack: Mod;
+  type: string;
 }
 
-const ModpackRows: FC<Props> = ({ pack }) => {
+const PackRows: FC<Props> = ({ pack, type }) => {
   const [showInfo, setShowInfo] = useState(false);
+
+  const categories = pack.categories.filter(
+    (cat, index, self) =>
+      index ===
+      self.findIndex(t => t.slug === cat.slug && t.iconUrl === cat.iconUrl)
+  );
 
   return (
     <div className="grid modpack-rows justify-between bg-tertiary border-2 border-transparent relative group transition duration-200 hover:border-accent hover:shadow-xs hover:shadow-accent">
-      <Link href={`modpacks/${pack.slug}`}>
+      <Link href={`${type}/${pack.slug}`}>
         <a className="relative w-32 h-32 block">
           <Image
             src={pack.logo.thumbnailUrl}
@@ -24,7 +31,7 @@ const ModpackRows: FC<Props> = ({ pack }) => {
         </a>
       </Link>
       <div className="p-4 max-h-32 overflow-hidden">
-        <Link href={`modpacks/${pack.slug}`}>
+        <Link href={`${type}/${pack.slug}`}>
           <a className="font-bold text-xl tracking-wider mb-3 w-fit inline-block">
             {pack.name}
           </a>
@@ -35,7 +42,7 @@ const ModpackRows: FC<Props> = ({ pack }) => {
           </p>
         ) : (
           <div className="flex gap-6 animate-fadeOutDown">
-            {pack.categories.map(cat => (
+            {categories.map(cat => (
               <Link href={`category/${cat.slug}`} key={cat.id}>
                 <a>
                   <div className="relative w-12 h-12 transition duration-200 hover:scale-125">
@@ -81,7 +88,7 @@ const ModpackRows: FC<Props> = ({ pack }) => {
             <i className="icon-iconly-outline-info-square" />
           )}
         </button>
-        <Link href={`modpacks/${pack.slug}`}>
+        <Link href={`${type}/${pack.slug}`}>
           <a className="flex justify-center items-center text-3xl bg-gradient-to-r from-t-alt to-transparent border-l-1 border-primary shadow-inner shadow-secondary h-full hover:bg-gradient-to-l">
             <i className="icon-iconly-curved-show" />
           </a>
@@ -91,4 +98,4 @@ const ModpackRows: FC<Props> = ({ pack }) => {
   );
 };
 
-export default ModpackRows;
+export default PackRows;

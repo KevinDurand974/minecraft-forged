@@ -5,9 +5,10 @@ import { FC } from "react";
 
 interface Props {
   pack: Mod;
+  type: string;
 }
 
-const ModpackTile: FC<Props> = ({ pack }) => {
+const PackTile: FC<Props> = ({ pack, type }) => {
   return (
     <div className="bg-tertiary h-48 w-48 m-auto relative group">
       <h3 className="absolute bottom-0 left-0 p-2 z-10 bg-black bg-opacity-90 font-bold w-full max-h-full overflow-hidden text-ellipsis">
@@ -21,7 +22,7 @@ const ModpackTile: FC<Props> = ({ pack }) => {
           className="object-cover"
         />
       </div>
-      <Link href={`modpacks/${pack.slug}`}>
+      <Link href={`${type}/${pack.slug}`}>
         <a className="absolute inset-0 flex justify-center items-center bg-black bg-opacity-90 z-20 shadow-xs shadow-accent cursor-pointer border-2 border-accent opacity-0 pointer-events-none transition duration-200 group-hover:pointer-events-auto group-hover:opacity-100">
           <i className="icon-window-maximise text-[150px] group-hover:animate-hover-sized" />
         </a>
@@ -30,4 +31,4 @@ const ModpackTile: FC<Props> = ({ pack }) => {
   );
 };
 
-export default ModpackTile;
+export default PackTile;

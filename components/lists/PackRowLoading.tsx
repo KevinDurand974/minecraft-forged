@@ -1,4 +1,4 @@
-const ModpackRowLoading = () => {
+const PackRowLoading = () => {
   return (
     <div className="grid modpack-rows justify-between bg-tertiary border-2 border-transparent">
       <div>
@@ -33,4 +33,4 @@ const ModpackRowLoading = () => {
   );
 };
 
-export default ModpackRowLoading;
+export default PackRowLoading;

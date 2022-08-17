@@ -1,4 +1,4 @@
-const ModpackTileLoading = () => {
+const PackTileLoading = () => {
   return (
     <div className="bg-tertiary h-48 w-48 m-auto relative ">
       <h3 className="absolute bottom-0 left-0 p-2 z-10 bg-black bg-opacity-100 w-full">
@@ -11,4 +11,4 @@ const ModpackTileLoading = () => {
   );
 };
 
-export default ModpackTileLoading;
+export default PackTileLoading;

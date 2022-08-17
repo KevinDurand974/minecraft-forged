@@ -29,3 +29,5 @@ export interface SearchArgs {
 }
 
 export type DisplayFilter = "tiles" | "rows";
+
+export type BasicCFSearchPage = "modpacks" | "mods" | "resource-packs";

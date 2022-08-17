@@ -1,11 +1,11 @@
-import { gql, useQuery } from "@apollo/client";
+import { DocumentNode, gql, useQuery } from "@apollo/client";
 import Background from "@components/Background";
 import { Filter } from "@components/filters";
 import {
-  Modpack,
-  ModpackRowLoading,
-  ModpackRowNoResult,
-  ModpackTileLoading,
+  Pack,
+  PackRowLoading,
+  PackRowNoResult,
+  PackTileLoading,
 } from "@components/lists";
 import Search from "@components/Search";
 import {
@@ -17,6 +17,7 @@ import Sidenav from "@components/Sidenav";
 import { client } from "@forged/apollo";
 import { maxItemForAllPage, maxItemPerPage } from "@forged/curseforge";
 import {
+  BasicCFSearchPage,
   DisplayFilter,
   GameVersion,
   Mod,
@@ -25,15 +26,28 @@ import {
   SearchArgs,
 } from "@forged/types";
 import { useOneScreen } from "hooks/UseOnScreen";
-import { NextPage } from "next";
+import { GetStaticPropsContext, NextPage } from "next";
 import Head from "next/head";
 import { Fragment, useEffect, useRef, useState } from "react";
 import { BehaviorSubject, debounceTime } from "rxjs";
 
 interface Props {
-  modpacks: Mod[];
+  category: BasicCFSearchPage;
+  query: QueryProps;
+  mods: Mod[];
   pagination: Pagination;
   minecraftVersions: GameVersion[];
+  page: PageProps;
+}
+
+interface QueryProps {
+  query: DocumentNode;
+  queryName: string;
+}
+
+interface PageProps {
+  title: string;
+  description: string;
 }
 
 interface Filters {
@@ -41,49 +55,23 @@ interface Filters {
   version: string;
   sortby: ModsSearchSortField;
 }
+let queryVar: string;
+let queryNameVar: string;
+let pageTitleVar: string;
+let pageDescriptionVar: string;
 
-const graphqlQuery = gql`
-  query Query($args: CFSearchInput) {
-    getModpacks(args: $args) {
-      mods {
-        id
-        name
-        slug
-        summary
-        downloadCount
-        categories {
-          iconUrl
-          slug
-          name
-          id
-        }
-        logo {
-          thumbnailUrl
-        }
-        dateCreated
-        dateModified
-      }
-      pagination {
-        index
-        totalCount
-      }
-    }
-    getVersions {
-      version
-      list
-    }
-  }
-`;
-
-const CategoriePage: NextPage<Props> = ({
-  modpacks,
+const CategoryPage: NextPage<Props> = ({
+  mods,
   pagination,
   minecraftVersions,
+  category,
+  query: { query, queryName },
+  page: { title, description },
 }) => {
   const [paginationInfo, setPaginationInfo] = useState(pagination);
   const [packLoaded, setPackNumber] = useState(maxItemPerPage);
   const [packUpdate, setPackUpdate] = useState(false);
-  const [modpackArray, setModpackArray] = useState(modpacks);
+  const [modpackArray, setModpackArray] = useState(mods);
   const [queryArg, setQueryArg] = useState({
     index: packLoaded,
     sortField: 2,
@@ -110,7 +98,11 @@ const CategoriePage: NextPage<Props> = ({
 
   const packRef = useRef(null);
 
-  const { refetch } = useQuery(graphqlQuery);
+  const { refetch } = useQuery(
+    gql`
+      ${query}
+    `
+  );
 
   const isTriggerFetchVisible$ = new BehaviorSubject(
     useOneScreen(packRef, {
@@ -136,13 +128,13 @@ const CategoriePage: NextPage<Props> = ({
           });
           setModpackArray(oldPacks => [
             ...oldPacks,
-            ...(data.getModpacks.mods as Mod[]),
+            ...(data[queryName].mods as Mod[]),
           ]);
           setQueryArg(oldQuery => ({
             ...oldQuery,
             index: oldQuery.index! + maxItemPerPage,
           }));
-          if (data.getModpacks.mods.length % maxItemPerPage === 0) {
+          if (data[queryName].mods.length % maxItemPerPage === 0) {
             setPackNumber(num => num + maxItemPerPage);
           } else {
             setPackNumber(() => maxItemForAllPage + maxItemPerPage);
@@ -163,6 +155,7 @@ const CategoriePage: NextPage<Props> = ({
     packUpdate,
     paginationInfo,
     queryArg,
+    queryName,
     refetch,
   ]);
 
@@ -177,8 +170,8 @@ const CategoriePage: NextPage<Props> = ({
       const { data } = await refetch({
         args: newQueryArg,
       });
-      setModpackArray(() => data.getModpacks.mods);
-      setPaginationInfo(() => data.getModpacks.pagination);
+      setModpackArray(() => data[queryName].mods);
+      setPaginationInfo(() => data[queryName].pagination);
       setQueryArg(() => ({ ...newQueryArg, index: maxItemPerPage }));
       setPackNumber(() => 20);
       setNewSearchLoaded(true);
@@ -201,7 +194,6 @@ const CategoriePage: NextPage<Props> = ({
     }));
     setPackUpdate(true);
     setModpackArray([]);
-    setPackNumber(() => 20);
     const { data } = await refetch({
       args: {
         ...queryArg,
@@ -209,8 +201,13 @@ const CategoriePage: NextPage<Props> = ({
         gameVersion: version === "all" ? "" : version,
       },
     });
-    setModpackArray(() => data.getModpacks.mods);
-    setPaginationInfo(() => data.getModpacks.pagination);
+    setPackNumber(() => 20);
+    setQueryArg(pre => ({
+      ...pre,
+      index: pre.index! + maxItemPerPage,
+    }));
+    setModpackArray(() => data[queryName].mods);
+    setPaginationInfo(() => data[queryName].pagination);
     setPackUpdate(false);
   };
   const handleFilterChoiceSortBy = async (sortby: ModsSearchSortField) => {
@@ -222,28 +219,34 @@ const CategoriePage: NextPage<Props> = ({
     }));
     setPackUpdate(true);
     setModpackArray([]);
-    setPackNumber(() => 20);
     const { data } = await refetch({
       args: { ...queryArg, index: 0, sortField: sortby },
     });
-    setModpackArray(() => data.getModpacks.mods);
-    setPaginationInfo(() => data.getModpacks.pagination);
+    setPackNumber(() => 20);
+    setQueryArg(pre => ({
+      ...pre,
+      index: pre.index! + maxItemPerPage,
+    }));
+    setModpackArray(() => data[queryName].mods);
+    setPaginationInfo(() => data[queryName].pagination);
     setPackUpdate(false);
   };
+
+  let packType = "";
+  if (category === "modpacks") packType = "modpacks";
+  else if (category === "mods") packType = "mods";
+  else if (category === "resource-packs") packType = "resource packs";
 
   return (
     <Fragment>
       <Head>
-        <title>Modpacks List | Minecraft Forged</title>
-        <meta
-          name="description"
-          content="Find your best Modpack in any version and play it easly!"
-        />
+        <title>{title}</title>
+        <meta name="description" content={description} />
       </Head>
       <section>
         <div className="flex justify-between items-center content-center mt-20 mb-10 max-w-screen-2xl mx-auto">
           <h1 className="text-5xl font-bold small-case text-center">
-            All modpacks availables
+            All {packType} availables
           </h1>
           <div className="flex gap-4 justify-center">
             <button
@@ -284,31 +287,38 @@ const CategoriePage: NextPage<Props> = ({
         <Search
           fetchQuery={handleNewSearch}
           loaded={isNewSearchLoaded}
-          placeholder="Search a Modpack..."
+          placeholder={`Search a ${packType}...`}
         />
 
-        {!modpackArray.length && !packUpdate && <ModpackRowNoResult />}
+        {!modpackArray.length && !packUpdate && (
+          <PackRowNoResult type={packType!} />
+        )}
 
         {getFilters.display === "tiles" && (
           <div className="max-w-screen-2xl py-4 grid grid-cols-7 gap-6 m-auto">
             {modpackArray.map(pack => (
-              <Modpack pack={pack} type="tiles" key={pack.id} />
+              <Pack
+                pack={pack}
+                type="tiles"
+                category={category}
+                key={pack.id}
+              />
             ))}
             {packUpdate &&
               Array(3)
                 .fill(1)
-                .map((k, i) => <ModpackTileLoading key={k + "" + i} />)}
+                .map((k, i) => <PackTileLoading key={k + "" + i} />)}
           </div>
         )}
         {getFilters.display === "rows" && (
           <div className="max-w-screen-2xl flex flex-col gap-4 m-auto w-full py-4">
             {modpackArray.map(pack => (
-              <Modpack pack={pack} type="rows" key={pack.id} />
+              <Pack pack={pack} type="rows" category={category} key={pack.id} />
             ))}
             {packUpdate &&
               Array(3)
                 .fill(1)
-                .map((k, i) => <ModpackRowLoading key={k + "" + i} />)}
+                .map((k, i) => <PackRowLoading key={k + "" + i} />)}
           </div>
         )}
       </section>
@@ -338,20 +348,90 @@ const CategoriePage: NextPage<Props> = ({
   );
 };
 
-export const getStaticProps = async () => {
+export const getStaticProps = async (ctx: GetStaticPropsContext) => {
   try {
-    const { data } = await client.query({ query: graphqlQuery });
-    const packs: Mod[] = data.getModpacks.mods;
-    const pagination: Pagination = data.getModpacks.pagination;
+    const category = ctx.params?.category as BasicCFSearchPage;
+    if (!category) return { notFound: true };
+
+    const createQuery = (
+      queryName: string
+    ) => `query Query($args: CFSearchInput) {
+      ${queryName}(args: $args) {
+        mods {
+          id
+          name
+          slug
+          summary
+          downloadCount
+          categories {
+            iconUrl
+            slug
+            name
+            id
+          }
+          logo {
+            thumbnailUrl
+          }
+          dateCreated
+          dateModified
+        }
+        pagination {
+          index
+          totalCount
+        }
+      }
+      getVersions {
+        version
+        list
+      }
+    }
+  `;
+
+    switch (category) {
+      case "modpacks":
+        queryVar = createQuery("getModpacks");
+        queryNameVar = "getModpacks";
+        pageTitleVar = "Modpacks List";
+        pageDescriptionVar =
+          "Find your best Modpack in any version and play it easly!";
+        break;
+      case "mods":
+        queryVar = createQuery("getMods");
+        queryNameVar = "getMods";
+        pageTitleVar = "Mods List";
+        pageDescriptionVar =
+          "Find your best mods in any version, had more fun to the history and play this new adventure!";
+        break;
+      case "resource-packs":
+        queryVar = createQuery("getResourcePacks");
+        queryNameVar = "getResourcePacks";
+        pageTitleVar = "Resource Packs List";
+        pageDescriptionVar = "o/";
+        break;
+    }
+
+    const { data } = await client.query({
+      query: gql`
+        ${queryVar}
+      `,
+    });
+    const packs: Mod[] = data[queryNameVar].mods;
+    const pagination: Pagination = data[queryNameVar].pagination;
     const minecraftVersions: GameVersion[] = data.getVersions;
 
     if (!packs.length) return { notFound: true };
 
     return {
       props: {
-        modpacks: packs,
+        category,
+        query: { query: queryVar, queryName: queryNameVar },
+        mods: packs,
         pagination,
         minecraftVersions,
+        page: {
+          title: `${pageTitleVar} | Minecraft Forged`,
+          description: pageDescriptionVar,
+        },
       },
       revalidate: 3600,
     };
@@ -361,4 +441,15 @@ export const getStaticProps = async () => {
   }
 };
 
-export default CategoriePage;
+export const getStaticPaths = async () => {
+  return {
+    paths: [
+      { params: { category: "modpacks" } },
+      { params: { category: "mods" } },
+      { params: { category: "resource-packs" } },
+    ],
+    fallback: false,
+  };
+};
+
+export default CategoryPage;

@@ -29,7 +29,7 @@ const Home: NextPage = () => {
           <HomeLink link="/modpacks" source={modpacksImg} title="Modpacks" />
           <HomeLink link="/mods" source={modsImg} title="Mods" />
           <HomeLink
-            link="/ressource-packs"
+            link="/resource-packs"
             source={ressourceImg}
             title="Ressource Packs"
           />
