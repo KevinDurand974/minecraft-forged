@@ -1,21 +1,36 @@
 import {
   getAllModLoaders,
+  getCFMods,
   getMinecraftVersionList,
   getModpacks,
+  modpackId,
+  modsId,
 } from "@forged/curseforge";
 import { GameVersion, ModLoaderType } from "@forged/types";
 import { Arg, Query, Resolver } from "type-graphql";
 
-import { ModpackInput } from "../inputs";
+import { CFSearchInput } from "../inputs";
 import { ModLoader, Mods, Version } from "../schema/curseforge";
 
 @Resolver(Mods)
-export class ModpackResolver {
+export class CFModsResolver {
   @Query(() => Mods)
   async getModpacks(
-    @Arg("args", type => ModpackInput, { nullable: true }) args: ModpackInput
+    @Arg("args", type => CFSearchInput, { nullable: true }) args: CFSearchInput
   ): Promise<Mods> {
-    const res = await getModpacks(args);
+    const res = await getCFMods(modpackId, args);
+    if (!res?.data.length) return { mods: [] };
+    return {
+      mods: res.data,
+      pagination: res.pagination,
+    };
+  }
+
+  @Query(() => Mods)
+  async getMods(
+    @Arg("args", type => CFSearchInput, { nullable: true }) args: CFSearchInput
+  ): Promise<Mods> {
+    const res = await getCFMods(modsId, args);
     if (!res?.data.length) return { mods: [] };
     return {
       mods: res.data,

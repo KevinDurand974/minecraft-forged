@@ -43,7 +43,7 @@ interface Filters {
 }
 
 const graphqlQuery = gql`
-  query Query($args: ModpackInput) {
+  query Query($args: CFSearchInput) {
     getModpacks(args: $args) {
       mods {
         id
@@ -281,7 +281,11 @@ const CategoriePage: NextPage<Props> = ({
           />
         </div>
 
-        <Search fetchQuery={handleNewSearch} loaded={isNewSearchLoaded} />
+        <Search
+          fetchQuery={handleNewSearch}
+          loaded={isNewSearchLoaded}
+          placeholder="Search a Modpack..."
+        />
 
         {!modpackArray.length && !packUpdate && <ModpackRowNoResult />}
 

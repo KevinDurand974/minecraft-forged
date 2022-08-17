@@ -3,7 +3,7 @@ import { ModLoaderType, ModsSearchSortField } from "@forged/types";
 import { Field, InputType, Int } from "type-graphql";
 
 @InputType()
-export class ModpackInput {
+export class CFSearchInput {
   @Field(type => Int, { nullable: true })
   sortField!: ModsSearchSortField;
 

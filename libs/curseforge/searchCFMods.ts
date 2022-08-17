@@ -1,13 +1,14 @@
 import { SearchArgs, SearchModsResponse } from "@forged/types";
 
-import { baseApi, maxItemPerPage, modpackId } from ".";
+import { baseApi, maxItemPerPage } from ".";
 
-export const getModpacks = async (
+export const getCFMods = async (
+  classId: number,
   args?: Partial<SearchArgs>
 ): Promise<SearchModsResponse | null> => {
   try {
     const params = {
-      classId: modpackId,
+      classId,
       sortField: 2,
       sortOrder: "desc",
       index: 0,

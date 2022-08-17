@@ -11,9 +11,10 @@ import {
 interface Props {
   loaded: boolean;
   fetchQuery: (queryArg: Partial<SearchArgs>) => void;
+  placeholder: string;
 }
 
-const Search: FC<Props> = ({ loaded, fetchQuery }) => {
+const Search: FC<Props> = ({ loaded, fetchQuery, placeholder }) => {
   const [oldSearch, setOldSearch] = useState("");
   const [search, setSearch] = useState("");
   const [isClear, clearSearch] = useState(false);
@@ -76,7 +77,7 @@ const Search: FC<Props> = ({ loaded, fetchQuery }) => {
       </div>
       <input
         type="text"
-        placeholder="Search a Modpack..."
+        placeholder={placeholder}
         value={search}
         onChange={e => setSearch(e.target.value)}
         className="w-full px-3 py-2 border-none bg-transparent tracking-wider text-lg font-semibold outline-none"
