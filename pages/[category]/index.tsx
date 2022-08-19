@@ -18,6 +18,7 @@ import { client } from "@forged/apollo";
 import { maxItemForAllPage, maxItemPerPage } from "@forged/curseforge";
 import {
   BasicCFSearchPage,
+  Category,
   DisplayFilter,
   GameVersion,
   Mod,
@@ -33,6 +34,7 @@ import { BehaviorSubject, debounceTime } from "rxjs";
 
 interface Props {
   category: BasicCFSearchPage;
+  minecraftCategories: Category[];
   query: QueryProps;
   mods: Mod[];
   pagination: Pagination;
@@ -65,6 +67,7 @@ const CategoryPage: NextPage<Props> = ({
   pagination,
   minecraftVersions,
   category,
+  minecraftCategories,
   query: { query, queryName },
   page: { title, description },
 }) => {
@@ -173,7 +176,7 @@ const CategoryPage: NextPage<Props> = ({
       setModpackArray(() => data[queryName].mods);
       setPaginationInfo(() => data[queryName].pagination);
       setQueryArg(() => ({ ...newQueryArg, index: maxItemPerPage }));
-      setPackNumber(() => 20);
+      setPackNumber(() => maxItemPerPage);
       setNewSearchLoaded(true);
       setPackUpdate(false);
     } catch (error) {
@@ -201,7 +204,7 @@ const CategoryPage: NextPage<Props> = ({
         gameVersion: version === "all" ? "" : version,
       },
     });
-    setPackNumber(() => 20);
+    setPackNumber(() => maxItemPerPage);
     setQueryArg(pre => ({
       ...pre,
       index: pre.index! + maxItemPerPage,
@@ -216,13 +219,19 @@ const CategoryPage: NextPage<Props> = ({
       ...pre,
       index: 0,
       sortField: sortby,
+      sortOrder: sortby === 4 ? "asc" : "desc",
     }));
     setPackUpdate(true);
     setModpackArray([]);
     const { data } = await refetch({
-      args: { ...queryArg, index: 0, sortField: sortby },
+      args: {
+        ...queryArg,
+        index: 0,
+        sortField: sortby,
+        sortOrder: sortby === 4 ? "asc" : "desc",
+      },
     });
-    setPackNumber(() => 20);
+    setPackNumber(() => maxItemPerPage);
     setQueryArg(pre => ({
       ...pre,
       index: pre.index! + maxItemPerPage,
@@ -300,7 +309,7 @@ const CategoryPage: NextPage<Props> = ({
               <Pack
                 pack={pack}
                 type="tiles"
-                category={category}
+                categories={minecraftCategories}
                 key={pack.id}
               />
             ))}
@@ -313,7 +322,12 @@ const CategoryPage: NextPage<Props> = ({
         {getFilters.display === "rows" && (
           <div className="max-w-screen-2xl flex flex-col gap-4 m-auto w-full py-4">
             {modpackArray.map(pack => (
-              <Pack pack={pack} type="rows" category={category} key={pack.id} />
+              <Pack
+                pack={pack}
+                type="rows"
+                categories={minecraftCategories}
+                key={pack.id}
+              />
             ))}
             {packUpdate &&
               Array(3)
@@ -362,6 +376,7 @@ export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
           id
           name
           slug
+          classId
           summary
           downloadCount
           categories {
@@ -384,6 +399,13 @@ export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
       getVersions {
         version
         list
+      }
+      getCategories {
+        id
+        name
+        slug
+        iconUrl
+        isClass
       }
     }
   `;
@@ -419,12 +441,14 @@ export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
     const packs: Mod[] = data[queryNameVar].mods;
     const pagination: Pagination = data[queryNameVar].pagination;
     const minecraftVersions: GameVersion[] = data.getVersions;
+    const minecraftCategories: Category[] = data.getCategories;
 
     if (!packs.length) return { notFound: true };
 
     return {
       props: {
         category,
+        minecraftCategories,
         query: { query: queryVar, queryName: queryNameVar },
         mods: packs,
         pagination,

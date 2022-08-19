@@ -42,8 +42,8 @@ const Home: NextPage = () => {
         >
           <p className="italic font-light">More info about this website</p>
           <div className="text-xs text-gray-400">
-            <i className="icon-curved-sharp-arrow-down" />
-            <i className="icon-curved-sharp-arrow-down" />
+            <i className="icon-iconly-curved-arrow-down" />
+            <i className="icon-iconly-curved-arrow-down" />
           </div>
         </a>
       </section>

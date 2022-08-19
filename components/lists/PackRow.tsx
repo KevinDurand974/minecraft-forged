@@ -1,4 +1,4 @@
-import { Mod } from "@forged/types";
+import { Category, Mod } from "@forged/types";
 import { format, formatDistanceToNowStrict } from "date-fns";
 import Image from "next/image";
 import Link from "next/link";
@@ -6,21 +6,32 @@ import React, { FC, useState } from "react";
 
 interface Props {
   pack: Mod;
-  type: string;
+  categories: Category[];
 }
 
-const PackRows: FC<Props> = ({ pack, type }) => {
+const PackRows: FC<Props> = ({ pack, categories }) => {
   const [showInfo, setShowInfo] = useState(false);
 
-  const categories = pack.categories.filter(
+  const categoriesFix = pack.categories.filter(
     (cat, index, self) =>
       index ===
       self.findIndex(t => t.slug === cat.slug && t.iconUrl === cat.iconUrl)
   );
 
+  const packClassSlug = () => {
+    if (pack?.classId) {
+      const category = categories.find(
+        category => category.id === pack.classId
+      );
+      if (category?.slug) return category.slug;
+      return "other";
+    }
+    return "other";
+  };
+
   return (
     <div className="grid modpack-rows justify-between bg-tertiary border-2 border-transparent relative group transition duration-200 hover:border-accent hover:shadow-xs hover:shadow-accent">
-      <Link href={`${type}/${pack.slug}`}>
+      <Link href={`${packClassSlug()}/${pack.slug}`}>
         <a className="relative w-32 h-32 block">
           <Image
             src={pack.logo.thumbnailUrl}
@@ -31,7 +42,7 @@ const PackRows: FC<Props> = ({ pack, type }) => {
         </a>
       </Link>
       <div className="p-4 max-h-32 overflow-hidden">
-        <Link href={`${type}/${pack.slug}`}>
+        <Link href={`${packClassSlug()}/${pack.slug}`}>
           <a className="font-bold text-xl tracking-wider mb-3 w-fit inline-block">
             {pack.name}
           </a>
@@ -42,7 +53,7 @@ const PackRows: FC<Props> = ({ pack, type }) => {
           </p>
         ) : (
           <div className="flex gap-6 animate-fadeOutDown">
-            {categories.map(cat => (
+            {categoriesFix.map(cat => (
               <Link href={`category/${cat.slug}`} key={cat.id}>
                 <a>
                   <div className="relative w-12 h-12 transition duration-200 hover:scale-125">
@@ -88,7 +99,7 @@ const PackRows: FC<Props> = ({ pack, type }) => {
             <i className="icon-iconly-outline-info-square" />
           )}
         </button>
-        <Link href={`${type}/${pack.slug}`}>
+        <Link href={`${packClassSlug()}/${pack.slug}`}>
           <a className="flex justify-center items-center text-3xl bg-gradient-to-r from-t-alt to-transparent border-l-1 border-primary shadow-inner shadow-secondary h-full hover:bg-gradient-to-l">
             <i className="icon-iconly-curved-show" />
           </a>

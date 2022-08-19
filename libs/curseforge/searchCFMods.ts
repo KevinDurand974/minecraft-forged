@@ -3,7 +3,7 @@ import { SearchArgs, SearchModsResponse } from "@forged/types";
 import { baseApi, maxItemPerPage } from ".";
 
 export const getCFMods = async (
-  classId: number,
+  classId: number | null,
   args?: Partial<SearchArgs>
 ): Promise<SearchModsResponse | null> => {
   try {
@@ -14,7 +14,12 @@ export const getCFMods = async (
       index: 0,
       pageSize: maxItemPerPage,
       ...args,
-    };
+    } as Partial<SearchArgs>;
+
+    if (!params.classId) {
+      delete params.classId;
+    }
+
     const response = await baseApi.get("mods/search", { params });
     const data: SearchModsResponse = response.data;
 

@@ -1,8 +1,8 @@
 import "reflect-metadata";
 
 import {
+  CategoriesResolver,
   CFModsResolver,
-  ModLoaderResolver,
   VersionResolver,
 } from "@forged/graphql/resolver";
 import { ApolloServer } from "apollo-server-micro";
@@ -10,7 +10,7 @@ import Cors from "micro-cors";
 import { buildSchema } from "type-graphql";
 
 const schema = await buildSchema({
-  resolvers: [CFModsResolver, VersionResolver, ModLoaderResolver],
+  resolvers: [CFModsResolver, VersionResolver, CategoriesResolver],
 });
 
 const cors = Cors();

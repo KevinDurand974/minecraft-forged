@@ -25,7 +25,7 @@ export class Category {
   name!: string;
 
   @Field(type => String, { nullable: true })
-  slug!: string;
+  slug?: string;
 
   @Field(type => String)
   url!: string;
@@ -35,6 +35,9 @@ export class Category {
 
   @Field(type => String)
   dateModified!: string;
+
+  @Field(type => Boolean, { nullable: true })
+  isClass?: boolean;
 }
 
 @ObjectType()
@@ -191,6 +194,9 @@ export class Mod {
 
   @Field(type => String)
   slug!: string;
+
+  @Field(type => Int, { nullable: true })
+  classId?: number;
 
   @Field(type => ModLinks)
   links!: ModLinks;
