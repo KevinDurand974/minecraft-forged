@@ -4,7 +4,7 @@ import {
   CFModsResolver,
   ModLoaderResolver,
   VersionResolver,
-} from "@forged/graphql/resolver/curseforge";
+} from "@forged/graphql/resolver";
 import { ApolloServer } from "apollo-server-micro";
 import Cors from "micro-cors";
 import { buildSchema } from "type-graphql";
@@ -18,6 +18,7 @@ const cors = Cors();
 const server = new ApolloServer({
   schema,
   // context: () => prisma here
+  cache: "bounded",
 });
 
 const startServer = server.start();

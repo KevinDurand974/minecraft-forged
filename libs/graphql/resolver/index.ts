@@ -1,1 +1,1 @@
-export * from "./exemple";
+export * from "./curseforge";

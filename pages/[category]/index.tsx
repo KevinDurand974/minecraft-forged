@@ -26,7 +26,7 @@ import {
   SearchArgs,
 } from "@forged/types";
 import { useOneScreen } from "hooks/UseOnScreen";
-import { GetStaticPropsContext, NextPage } from "next";
+import { GetServerSidePropsContext, NextPage } from "next";
 import Head from "next/head";
 import { Fragment, useEffect, useRef, useState } from "react";
 import { BehaviorSubject, debounceTime } from "rxjs";
@@ -348,10 +348,11 @@ const CategoryPage: NextPage<Props> = ({
   );
 };
 
-export const getStaticProps = async (ctx: GetStaticPropsContext) => {
+export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
   try {
     const category = ctx.params?.category as BasicCFSearchPage;
-    if (!category) return { notFound: true };
+    if (!category || !["modpacks", "mods", "resource-packs"].includes(category))
+      return { notFound: true };
 
     const createQuery = (
       queryName: string
@@ -433,23 +434,11 @@ export const getStaticProps = async (ctx: GetStaticPropsContext) => {
           description: pageDescriptionVar,
         },
       },
-      revalidate: 3600,
     };
   } catch (error: any) {
     console.log(error.message);
     return { notFound: true };
   }
-};
-
-export const getStaticPaths = async () => {
-  return {
-    paths: [
-      { params: { category: "modpacks" } },
-      { params: { category: "mods" } },
-      { params: { category: "resource-packs" } },
-    ],
-    fallback: false,
-  };
 };
 
 export default CategoryPage;

@@ -2,7 +2,6 @@ import {
   getAllModLoaders,
   getCFMods,
   getMinecraftVersionList,
-  getModpacks,
   modpackId,
   modsId,
   resourcepacksId,
@@ -11,7 +10,7 @@ import { GameVersion, ModLoaderType } from "@forged/types";
 import { Arg, Query, Resolver } from "type-graphql";
 
 import { CFSearchInput } from "../inputs";
-import { ModLoader, Mods, Version } from "../schema/curseforge";
+import { ModLoader, Mods, Version } from "../schema";
 
 @Resolver(Mods)
 export class CFModsResolver {
