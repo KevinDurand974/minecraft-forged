@@ -19,7 +19,11 @@ const server = new ApolloServer({
   schema,
   // context: () => prisma here
   cache: "bounded",
-});
+  cors: {
+    origin: ["http://localhost", "http://127.0.0.1", "http://192.168.0.107"],
+  },
+  csrfPrevention: true,
+} as any);
 
 const startServer = server.start();
 

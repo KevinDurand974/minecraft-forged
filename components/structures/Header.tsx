@@ -19,7 +19,10 @@ const Header = () => {
       <Link href="/">
         <a className="flex flex-row items-center gap-3 justify-self-start bg-secondary rounded-[10px] px-3 py-2">
           <Logo className="h-6 fill-normal" />
-          <span className="text-xl font-bold">Minecraft Forged</span>
+          <span className="text-xl font-bold lt-md:hidden">
+            Minecraft Forged
+          </span>
+          <span className="text-xl font-bold gt-md:hidden">MF</span>
         </a>
       </Link>
 

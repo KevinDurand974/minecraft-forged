@@ -13,7 +13,7 @@ const Filter: FC<Props> = ({ title, value, children, className, onClick }) => {
 
   const style =
     className ||
-    "text-xl small-case bg-tertiary px-6 py-2 rounded-xl shadow-xs shadow-tertiary";
+    "text-xl lt-2xl:text-lg small-case bg-tertiary px-6 py-2 rounded-xl shadow-xs shadow-tertiary";
   return (
     <button className={style} onClick={handleClick}>
       {title} ▸ {value}

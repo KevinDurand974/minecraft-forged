@@ -64,7 +64,7 @@ const Search: FC<Props> = ({ loaded, fetchQuery, placeholder }) => {
   };
 
   return (
-    <div className="max-w-screen-2xl mx-auto px-2 py-2 bg-tertiary relative flex">
+    <div className="gt-2xl:max-w-screen-2xl gt-xl:max-w-screen-lg gt-lg:max-w-screen-md mx-auto px-2 py-2 bg-tertiary relative flex">
       <div className="flex justify-center items-center w-11">
         {!isSearching ? (
           <i className="icon-iconly-bold-search text-2xl" />
@@ -87,7 +87,7 @@ const Search: FC<Props> = ({ loaded, fetchQuery, placeholder }) => {
         onClick={handleReset}
       >
         <i className="icon-iconly-outline-delete" />
-        <span>Reset</span>
+        <span className="lt-sm:hidden">Reset</span>
       </button>
     </div>
   );

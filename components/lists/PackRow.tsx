@@ -30,7 +30,7 @@ const PackRows: FC<Props> = ({ pack, categories }) => {
   };
 
   return (
-    <div className="grid modpack-rows justify-between bg-tertiary border-2 border-transparent relative group transition duration-200 hover:border-accent hover:shadow-xs hover:shadow-accent">
+    <div className="grid modpack-rows lt-sm:modpack-rows-mobile justify-between bg-tertiary border-2 border-transparent relative group transition duration-200 hover:border-accent hover:shadow-xs hover:shadow-accent">
       <Link href={`${packClassSlug()}/${pack.slug}`}>
         <a className="relative w-32 h-32 block">
           <Image
@@ -41,14 +41,14 @@ const PackRows: FC<Props> = ({ pack, categories }) => {
           />
         </a>
       </Link>
-      <div className="p-4 max-h-32 overflow-hidden">
+      <div className="p-4 max-h-32 overflow-hidden lt-sm:flex lt-sm:my-auto">
         <Link href={`${packClassSlug()}/${pack.slug}`}>
-          <a className="font-bold text-xl tracking-wider mb-3 w-fit inline-block">
+          <a className="font-bold text-xl lt-sm:text-base tracking-wider gt-sm:mb-3 w-fit inline-block">
             {pack.name}
           </a>
         </Link>
         {!showInfo ? (
-          <p className="max-h-[48px] overflow-hidden text-ellipsis text-sm font-light animate-fadeOutDown">
+          <p className="max-h-[3.75rem] overflow-hidden text-ellipsis text-sm font-light animate-fadeOutDown lt-sm:hidden">
             {pack.summary}
           </p>
         ) : (
@@ -70,7 +70,7 @@ const PackRows: FC<Props> = ({ pack, categories }) => {
           </div>
         )}
       </div>
-      <ul className="flex flex-col p-4 whitespace-nowrap justify-between text-lg text-right items-end h-full">
+      <ul className="flex flex-col p-4 whitespace-nowrap justify-between text-lg text-right items-end h-full lt-sm:hidden">
         <li>
           {format(new Date(pack.dateCreated), "MMM d, Y")}{" "}
           <i className="icon-iconly-outline-plus" />
@@ -88,7 +88,7 @@ const PackRows: FC<Props> = ({ pack, categories }) => {
           <i className="icon-iconly-outline-arrow-down-square" />
         </li>
       </ul>
-      <div className="flex flex-col relative cursor-pointer">
+      <div className="flex flex-col relative cursor-pointer lt-sm:hidden">
         <button
           onClick={() => setShowInfo(!showInfo)}
           className="flex justify-center items-center text-3xl bg-gradient-to-r from-t-alt to-transparent border-l-1 border-l-primary shadow-inner shadow-secondary border-b-2 border-b-tertiary h-full hover:bg-gradient-to-l"

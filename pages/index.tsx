@@ -20,12 +20,12 @@ const Home: NextPage = () => {
         />
       </Head>
 
-      <section className="flex flex-col justify-center items-center p-4 h-[calc(100vh-76px)] relative">
-        <h1 className="text-5xl font-bold small-case mb-16">
+      <section className="flex flex-col gt-md:justify-center items-center p-4 gt-md:min-h-screen gt-md:-mt-[76px] relative">
+        <h1 className="gt-md:text-5xl lt-lg:text-2xl font-bold small-case gt-md:mb-16 lt-lg:mb-4 lt-lg:text-center">
           What do you want to do?
         </h1>
 
-        <nav className="grid grid-cols-4 gap-5">
+        <nav className="grid gt-md:grid-cols-4 lt-lg:grid-cols-2 gap-4">
           <HomeLink link="/modpacks" source={modpacksImg} title="Modpacks" />
           <HomeLink link="/mods" source={modsImg} title="Mods" />
           <HomeLink
@@ -38,7 +38,7 @@ const Home: NextPage = () => {
 
         <a
           href="#about-website"
-          className="flex flex-col justify-end items-center absolute bottom-2"
+          className="flex flex-col justify-end items-center absolute bottom-2 lt-lg:hidden"
         >
           <p className="italic font-light">More info about this website</p>
           <div className="text-xs text-gray-400">
@@ -49,14 +49,14 @@ const Home: NextPage = () => {
       </section>
       <section
         id="about-website"
-        className="flex flex-col w-2/3 mx-auto justify-center p-4 h-[calc(100vh-76px)] pt-[152px] mb-[76px] gap-10"
+        className="flex flex-col 2xl:max-w-screen-2xl xl:max-w-screen-xl lg:max-w-screen-lg mx-auto gt-md:justify-center p-4 gt-md:min-h-screen gt-md:pt-[76px] gt-md:gap-10 lt-lg:gap-4"
       >
-        <h1 className="self-center text-5xl font-bold small-case mb-16 text-center">
+        <h1 className="self-center gt-md:text-5xl lt-lg:text-2xl font-bold small-case 2xl:mb-16 xl:mb-0 text-center">
           What&apos;s the difference between official Curseforge website and
           this one?
         </h1>
 
-        <article className="grid grid-cols-2 gap-10">
+        <article className="grid gt-md:grid-cols-2 lt-lg:grid-cols-1 4xl:grid-cols-3 2xl:gap-10 gap-4">
           <div className="bg-secondary p-5 border-2 border-tertiary rounded-md min-h-[132px] shadow-md shadow-t-alt">
             <h3 className="text-2xl font-semibold mb-2 small-case">
               ➙ <span className="text-accent">C</span>ompletly remastered

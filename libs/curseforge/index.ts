@@ -17,8 +17,8 @@ export const baseApiClean = axios.create({
   },
 });
 
-const maxResult = 10000;
-export const maxItemPerPage = 40;
+const maxResult = 10; // 10000
+export const maxItemPerPage = 10;
 export const maxPage = Math.ceil(maxResult / maxItemPerPage);
 export const maxItemForAllPage = maxPage * maxItemPerPage;
 

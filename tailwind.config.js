@@ -52,6 +52,33 @@ module.exports = {
         "screen-xl": "1280px",
         "screen-2xl": "1536px",
       },
+      maxWidth: {
+        "screen-sm": "640px",
+        "screen-md": "768px",
+        "screen-lg": "1024px",
+        "screen-xl": "1280px",
+        "screen-2xl": "1536px",
+      },
+      screens: {
+        "lt-sm": { max: "639px" },
+        "lt-md": { max: "767px" },
+        "lt-lg": { max: "1023px" },
+        "lt-xl": { max: "1279px" },
+        "lt-2xl": { max: "1535px" },
+        "lt-4xl": { max: "2159px" },
+        "gt-sm": { min: "640px" },
+        "gt-md": { min: "768px" },
+        "gt-lg": { min: "1024px" },
+        "gt-xl": { min: "1280px" },
+        "gt-2xl": { min: "1536px" },
+        "gt-4xl": { min: "2160px" },
+        sm: { min: "640px", max: "767px" },
+        md: { min: "768px", max: "1023px" },
+        lg: { min: "1024px", max: "1279px" },
+        xl: { min: "1280px", max: "1535px" },
+        "2xl": { min: "1536px", max: "2159px" },
+        "4xl": { min: "2160px", max: "9999px" },
+      },
       keyframes: {
         sized: {
           "0%": {

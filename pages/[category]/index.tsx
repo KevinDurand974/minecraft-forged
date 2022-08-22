@@ -189,56 +189,64 @@ const CategoryPage: NextPage<Props> = ({
     setFilters(pre => ({ ...pre, display }));
   };
   const handleFilterChoiceVersion = async (version: string) => {
-    setFilters(pre => ({ ...pre, version }));
-    setQueryArg(pre => ({
-      ...pre,
-      index: 0,
-      gameVersion: version === "all" ? "" : version,
-    }));
-    setPackUpdate(true);
-    setModpackArray([]);
-    const { data } = await refetch({
-      args: {
-        ...queryArg,
+    try {
+      setFilters(pre => ({ ...pre, version }));
+      setQueryArg(pre => ({
+        ...pre,
         index: 0,
         gameVersion: version === "all" ? "" : version,
-      },
-    });
-    setPackNumber(() => maxItemPerPage);
-    setQueryArg(pre => ({
-      ...pre,
-      index: pre.index! + maxItemPerPage,
-    }));
-    setModpackArray(() => data[queryName].mods);
-    setPaginationInfo(() => data[queryName].pagination);
-    setPackUpdate(false);
+      }));
+      setPackUpdate(true);
+      setModpackArray([]);
+      const { data } = await refetch({
+        args: {
+          ...queryArg,
+          index: 0,
+          gameVersion: version === "all" ? "" : version,
+        },
+      });
+      setPackNumber(() => maxItemPerPage);
+      setQueryArg(pre => ({
+        ...pre,
+        index: pre.index! + maxItemPerPage,
+      }));
+      setModpackArray(() => data[queryName].mods);
+      setPaginationInfo(() => data[queryName].pagination);
+      setPackUpdate(false);
+    } catch (err: any) {
+      console.log(err);
+    }
   };
   const handleFilterChoiceSortBy = async (sortby: ModsSearchSortField) => {
-    setFilters(pre => ({ ...pre, sortby }));
-    setQueryArg(pre => ({
-      ...pre,
-      index: 0,
-      sortField: sortby,
-      sortOrder: sortby === 4 ? "asc" : "desc",
-    }));
-    setPackUpdate(true);
-    setModpackArray([]);
-    const { data } = await refetch({
-      args: {
-        ...queryArg,
+    try {
+      setFilters(pre => ({ ...pre, sortby }));
+      setQueryArg(pre => ({
+        ...pre,
         index: 0,
         sortField: sortby,
         sortOrder: sortby === 4 ? "asc" : "desc",
-      },
-    });
-    setPackNumber(() => maxItemPerPage);
-    setQueryArg(pre => ({
-      ...pre,
-      index: pre.index! + maxItemPerPage,
-    }));
-    setModpackArray(() => data[queryName].mods);
-    setPaginationInfo(() => data[queryName].pagination);
-    setPackUpdate(false);
+      }));
+      setPackUpdate(true);
+      setModpackArray([]);
+      const { data } = await refetch({
+        args: {
+          ...queryArg,
+          index: 0,
+          sortField: sortby,
+          sortOrder: sortby === 4 ? "asc" : "desc",
+        },
+      });
+      setPackNumber(() => maxItemPerPage);
+      setQueryArg(pre => ({
+        ...pre,
+        index: pre.index! + maxItemPerPage,
+      }));
+      setModpackArray(() => data[queryName].mods);
+      setPaginationInfo(() => data[queryName].pagination);
+      setPackUpdate(false);
+    } catch (err) {
+      console.log(err);
+    }
   };
 
   let packType = "";
@@ -252,8 +260,8 @@ const CategoryPage: NextPage<Props> = ({
         <title>{title}</title>
         <meta name="description" content={description} />
       </Head>
-      <section>
-        <div className="flex justify-between items-center content-center mt-20 mb-10 max-w-screen-2xl mx-auto">
+      <section className="lt-lg:p-4">
+        <div className="flex justify-between items-center gt-xl:mt-20 lt-sm:mt-4 gt-sm:mt-10 lt-sm:mb-4 mb-10 mx-auto gt-2xl:max-w-screen-2xl gt-xl:max-w-screen-lg gt-lg:max-w-screen-md lt-sm:flex-col lt-sm:gap-4">
           <h1 className="text-5xl font-bold small-case text-center">
             All {packType} availables
           </h1>
@@ -268,7 +276,7 @@ const CategoryPage: NextPage<Props> = ({
           </div>
         </div>
 
-        <div className="flex justify-evenly max-w-screen-2xl mx-auto mb-10">
+        <div className="flex justify-evenly gt-2xl:max-w-screen-2xl gt-xl:max-w-screen-lg gt-lg:max-w-screen-md mx-auto mb-10 lt-sm:hidden">
           <Filter title="Display" onClick={() => setShowFilterSidebar(true)}>
             {getFilters.display === "rows" && (
               <span>
@@ -304,7 +312,7 @@ const CategoryPage: NextPage<Props> = ({
         )}
 
         {getFilters.display === "tiles" && (
-          <div className="max-w-screen-2xl py-4 grid grid-cols-7 gap-6 m-auto">
+          <div className="gt-2xl:max-w-screen-2xl gt-xl:max-w-screen-lg gt-lg:max-w-screen-md py-4 grid gt-2xl:grid-cols-7 gt-xl:grid-cols-5 gt-md:grid-cols-3 lt-md:grid-cols-2 gap-6 m-auto">
             {modpackArray.map(pack => (
               <Pack
                 pack={pack}
@@ -320,7 +328,7 @@ const CategoryPage: NextPage<Props> = ({
           </div>
         )}
         {getFilters.display === "rows" && (
-          <div className="max-w-screen-2xl flex flex-col gap-4 m-auto w-full py-4">
+          <div className="gt-2xl:max-w-screen-2xl gt-xl:max-w-screen-lg gt-lg:max-w-screen-md flex flex-col gap-4 m-auto w-full py-4">
             {modpackArray.map(pack => (
               <Pack
                 pack={pack}

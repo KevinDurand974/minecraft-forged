@@ -21,7 +21,7 @@ const PackTile: FC<Props> = ({ pack, categories }) => {
   };
 
   return (
-    <div className="bg-tertiary h-48 w-48 m-auto relative group">
+    <div className="bg-tertiary h-48 w-48 lt-sm:h-36 lt-sm:w-36 m-auto relative group">
       <h3 className="absolute bottom-0 left-0 p-2 z-10 bg-black bg-opacity-90 font-bold w-full max-h-full overflow-hidden text-ellipsis">
         {pack.name}
       </h3>
@@ -34,9 +34,9 @@ const PackTile: FC<Props> = ({ pack, categories }) => {
         />
       </div>
       <Link href={`${packClassSlug}/${pack.slug}`}>
-        <a className="absolute inset-0 flex justify-center items-center bg-black bg-opacity-90 z-20 shadow-xs shadow-accent cursor-pointer border-2 border-accent opacity-0 pointer-events-none transition duration-200 group-hover:pointer-events-auto group-hover:opacity-100">
-          <i className="icon-window-maximise text-[150px] group-hover:animate-hover-sized" />
-        </a>
+        <div className="flex absolute inset-0 justify-center items-center bg-black bg-opacity-90 z-20 shadow-xs shadow-accent cursor-pointer border-2 border-accent opacity-0 pointer-events-none transition duration-200 group-hover:pointer-events-auto group-hover:opacity-100">
+          <i className="icon-window-maximise text-[8rem] group-hover:animate-hover-sized" />
+        </div>
       </Link>
     </div>
   );

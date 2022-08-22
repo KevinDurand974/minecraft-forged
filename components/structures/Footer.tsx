@@ -2,7 +2,7 @@ import Link from "next/link";
 
 const Footer = () => {
   return (
-    <footer className="w-full mt-auto bg-s-alt px-4 py-8 flex flex-row gap-4 justify-center items-center">
+    <footer className="w-full mt-auto bg-s-alt px-4 py-8 flex lg:flex-row gap-4 justify-center items-center flex-col-reverse">
       <div>
         <div className="text-center mb-5 font-semibold small-case">
           Powered by{" "}
@@ -15,17 +15,17 @@ const Footer = () => {
             CurseForge API
           </a>
         </div>
-        <div className="flex gap-5 flex-row justify-center font-bold small-case">
-          <p>Copyright © 2022</p>
-          <p>Minecraft Forged</p>
-          <p>All Rights Reserved</p>
+        <div className="grid gt-md:grid-cols-3 lt-lg:grid-cols-1 gap-5 flex-row justify-center font-bold small-case">
+          <p className="lt-lg:text-center">Copyright © 2022</p>
+          <p className="lt-lg:text-center">Minecraft Forged</p>
+          <p className="lt-lg:text-center">All Rights Reserved</p>
         </div>
       </div>
 
-      <div className="w-[1px] h-16 bg-primary mx-5" />
+      <div className="lg:w-[1px] lg:h-16 bg-primary mx-5 w-3/4 h-[1px]" />
 
       <div>
-        <nav className="flex flex-row gap-16">
+        <nav className="grid gt-md:grid-cols-4 lt-lg:grid-cols-2 gap-10">
           <ul className="flex flex-col gap-1">
             <li>
               <Link href="/about-us">
@@ -77,7 +77,7 @@ const Footer = () => {
               </Link>
             </li>
           </ul>
-          <ul>
+          <ul className="">
             <li>
               <a
                 href="https://www.curseforge.com"
