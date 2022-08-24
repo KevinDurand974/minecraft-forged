@@ -1,6 +1,7 @@
 import {
   getCFCategories,
   getCFMods,
+  getCompleteCFMod,
   getMinecraftVersionList,
   modpackId,
   modsId,
@@ -10,7 +11,7 @@ import { GameVersion, ModLoaderType } from "@forged/types";
 import { Arg, Query, Resolver } from "type-graphql";
 
 import { CFSearchInput } from "../inputs";
-import { Category, ModLoader, Mods, Version } from "../schema";
+import { Category, CompleteMod, ModLoader, Mods, Version } from "../schema";
 
 @Resolver(Mods)
 export class CFModsResolver {
@@ -76,5 +77,13 @@ export class CategoriesResolver {
   @Query(() => [Category], { nullable: true })
   async getCategories() {
     return await getCFCategories();
+  }
+}
+
+@Resolver(CompleteMod)
+export class CompleteModResolver {
+  @Query(() => CompleteMod, { nullable: true })
+  async getMod(@Arg("args", type => CFSearchInput) args: CFSearchInput) {
+    return await getCompleteCFMod(args);
   }
 }

@@ -3,6 +3,7 @@ import "reflect-metadata";
 import {
   CategoriesResolver,
   CFModsResolver,
+  CompleteModResolver,
   VersionResolver,
 } from "@forged/graphql/resolver";
 import { ApolloServer } from "apollo-server-micro";
@@ -10,7 +11,12 @@ import Cors from "micro-cors";
 import { buildSchema } from "type-graphql";
 
 const schema = await buildSchema({
-  resolvers: [CFModsResolver, VersionResolver, CategoriesResolver],
+  resolvers: [
+    CFModsResolver,
+    VersionResolver,
+    CategoriesResolver,
+    CompleteModResolver,
+  ],
 });
 
 const cors = Cors();
@@ -19,9 +25,6 @@ const server = new ApolloServer({
   schema,
   // context: () => prisma here
   cache: "bounded",
-  cors: {
-    origin: ["http://localhost", "http://127.0.0.1", "http://192.168.0.107"],
-  },
   csrfPrevention: true,
 } as any);
 

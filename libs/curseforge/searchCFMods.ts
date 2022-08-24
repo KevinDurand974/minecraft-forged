@@ -1,8 +1,9 @@
+import { CompleteMod } from "@forged/graphql/schema";
 import { SearchArgs, SearchModsResponse } from "@forged/types";
 
-import { baseApi, maxItemPerPage } from ".";
+import { baseApi, getCFModDescription, getCFModFiles, maxItemPerPage } from ".";
 
-export const getCFMods = async (
+const getCFMods = async (
   classId: number | null,
   args?: Partial<SearchArgs>
 ): Promise<SearchModsResponse | null> => {
@@ -44,3 +45,18 @@ export const getCFMods = async (
     return null;
   }
 };
+
+const getCompleteCFMod = async (
+  args: Partial<SearchArgs>
+): Promise<CompleteMod | null> => {
+  const modList = await getCFMods(null, args);
+  if (modList === null || !modList.data.length) return null;
+  const mod = modList.data[0];
+  const [description, files] = await Promise.all([
+    getCFModDescription(mod.id),
+    getCFModFiles(mod.id),
+  ]);
+  return { ...mod, description, files };
+};
+
+export { getCFMods, getCompleteCFMod };

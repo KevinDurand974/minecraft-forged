@@ -3,16 +3,16 @@ import { Field, Int, ObjectType } from "type-graphql";
 
 @ObjectType()
 export class ModLinks {
-  @Field(type => String)
+  @Field(type => String, { nullable: true })
   websiteUrl!: string;
 
-  @Field(type => String)
+  @Field(type => String, { nullable: true })
   wikiUrl!: string;
 
-  @Field(type => String)
+  @Field(type => String, { nullable: true })
   issuesUrl!: string;
 
-  @Field(type => String)
+  @Field(type => String, { nullable: true })
   sourceUrl!: string;
 }
 
@@ -138,8 +138,8 @@ export class FileIndex {
   @Field(type => Int, { nullable: true })
   gameVersionTypeId?: number;
 
-  @Field(type => Int)
-  modLoader!: number;
+  @Field(type => Int, { nullable: true })
+  modLoader?: number;
 }
 
 @ObjectType()
@@ -287,4 +287,13 @@ export class Version {
 export class ModLoader {
   @Field(type => String)
   name!: ModLoaderType;
+}
+
+@ObjectType()
+export class CompleteMod extends Mod {
+  @Field(type => String)
+  description!: string;
+
+  @Field(type => [File])
+  files!: File[];
 }

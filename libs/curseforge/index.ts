@@ -27,5 +27,7 @@ export const modsId = 6;
 export const resourcepacksId = 12;
 
 export * from "./category";
+export * from "./modDescriptions";
+export * from "./modFiles";
 export * from "./searchCFMods";
 export * from "./version";
