@@ -14,7 +14,9 @@ const Layout: FC<ChildrenProps> = ({ children }) => {
         <link rel="icon" href="/images/favicon.ico" />
       </Head>
       <Header />
-      <main className={`flex flex-col min-h-[100vh] w-full`}>{children}</main>
+      <main className={`flex flex-col min-h-[calc(100vh_-_76px)] w-full`}>
+        {children}
+      </main>
       <Footer />
     </Fragment>
   );

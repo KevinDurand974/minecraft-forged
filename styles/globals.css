@@ -18,6 +18,19 @@
   .modal-header {
     grid-template-columns: 1fr 48px;
   }
+  .pack-page-grid {
+    grid-template-columns: 18rem auto 18rem;
+  }
+  .user-reset img {
+    display: inline-block;
+  }
+  .user-reset a {
+    text-decoration: underline;
+    font-weight: bold;
+  }
+  .user-reset p {
+    margin-bottom: 1rem;
+  }
 }
 
 @layer components {
@@ -32,6 +45,9 @@
   }
   .sidebar-hover:hover {
     @apply bg-accent pr-8;
+  }
+  .pack-link {
+    @apply text-xl tracking-wider font-semibold py-3 px-5 flex gap-2 lt-2xl:text-lg small-case bg-tertiary rounded-xl shadow-xs shadow-tertiary justify-center;
   }
 }
 
