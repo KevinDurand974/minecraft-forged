@@ -10,6 +10,7 @@ import { format, formatDistanceToNowStrict } from "date-fns";
 import { GetServerSidePropsContext, NextPage } from "next";
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/router";
 
 interface Props {
   mod: CompleteMod;
@@ -36,19 +37,21 @@ const parseDescriptionLinks = (description: string) => {
 };
 
 const CategorieItemPage: NextPage<Props> = ({ mod }) => {
+  const router = useRouter();
+
   return (
     <>
-      <div className="grid pack-page-grid">
-        <div className="h-full w-full bg-s-alt bg-opacity-95 border-b border-tertiary">
+      <div className="flex">
+        <div className="w-72 sticky top-[76px] h-full bg-s-alt bg-opacity-95 border-b border-tertiary">
           <nav className="flex flex-col justify-center gap-8 py-4 px-8 sticky top-[76px] h-[calc(100vh_-_76px)]">
             <button className="pack-link mb-12 items-center">
               <i className="icon-iconly-outline-arrow-left-square text-2xl" />
               <span>Hide</span>
             </button>
 
-            <a href="#a" className="pack-link">
-              All Files
-            </a>
+            <Link href={`/${router.query.category}/${router.query.slug}/files`}>
+              <a className="pack-link">All Files</a>
+            </Link>
             <a href="#a" className="pack-link">
               Images
             </a>
@@ -58,13 +61,16 @@ const CategorieItemPage: NextPage<Props> = ({ mod }) => {
             <a href="#a" className="pack-link">
               Relations
             </a>
-            <a href="#a" className="pack-link">
+            <a
+              href={`https://www.curseforge.com/minecraft/${router.query.category}/${router.query.slug}`}
+              className="pack-link"
+            >
               CurseForge
             </a>
           </nav>
         </div>
 
-        <section className="p-4 flex flex-col gap-4">
+        <section className="p-4 flex flex-col gap-4 w-[calc(100%_-_36rem)]">
           <div className="flex items-center gap-4">
             <div className="min-h-[8rem] min-w-[8rem] relative">
               <Image
@@ -88,7 +94,7 @@ const CategorieItemPage: NextPage<Props> = ({ mod }) => {
           />
         </section>
 
-        <aside className="bg-s-alt bg-opacity-95 border-b border-tertiary flex flex-col mb-auto gap-8 p-4 sticky top-[76px] h-full max-h-[calc(100vh_-_76px)] overflow-auto">
+        <aside className="bg-s-alt bg-opacity-95 border-b border-tertiary flex flex-col mb-auto gap-8 p-4 sticky top-[76px] w-72 h-full max-h-[calc(100vh_-_76px)] overflow-auto">
           <PackItem title="Project">
             <div className="flex justify-center">
               <div className="flex flex-col gap-2">

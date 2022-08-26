@@ -105,7 +105,7 @@ export class File {
   @Field(type => Int)
   downloadCount!: number;
 
-  @Field(type => String)
+  @Field(type => String, { nullable: true })
   downloadUrl!: string;
 
   @Field(type => [String])

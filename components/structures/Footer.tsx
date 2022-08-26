@@ -2,7 +2,7 @@ import Link from "next/link";
 
 const Footer = () => {
   return (
-    <footer className="w-full mt-auto bg-s-alt px-4 py-8 flex lg:flex-row gap-4 justify-center items-center flex-col-reverse">
+    <footer className="w-full mt-auto bg-s-alt px-4 py-8 flex gt-2xl:flex-row gap-4 justify-center items-center flex-col-reverse">
       <div>
         <div className="text-center mb-5 font-semibold small-case">
           Powered by{" "}
@@ -22,7 +22,7 @@ const Footer = () => {
         </div>
       </div>
 
-      <div className="lg:w-[1px] lg:h-16 bg-primary mx-5 w-3/4 h-[1px]" />
+      <div className="gt-2xl:w-[1px] gt-2xl:h-16 bg-primary mx-5 w-3/4 h-[1px]" />
 
       <div>
         <nav className="grid gt-md:grid-cols-4 lt-lg:grid-cols-2 gap-10">

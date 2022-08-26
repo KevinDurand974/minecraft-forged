@@ -1,7 +1,7 @@
 import PackItem from "@components/PackItem";
 import { File } from "@forged/graphql/schema";
 import { closestIndexTo, format } from "date-fns";
-import { FC } from "react";
+import { FC, useMemo } from "react";
 
 interface Props {
   files: File[];
@@ -14,6 +14,9 @@ const groupBy = (arr: any[], property: string) => {
     return memo;
   }, {});
 };
+
+const compare = (a: string, b: string) =>
+  b.localeCompare(a, undefined, { numeric: true, sensitivity: "base" });
 
 const filesFilter = (files: File[]) => {
   const versionMap = new Map<string, File[]>();
@@ -43,12 +46,13 @@ const filesFilter = (files: File[]) => {
       );
     }
   });
-  // TODO: Make sure version is ordered "desc"
-  return showVersion;
+  return new Map(
+    [...showVersion.entries()].sort((a, b) => compare(a[0], b[0]))
+  );
 };
 
 const SidebarFiles: FC<Props> = ({ files }) => {
-  const selectedFiles = filesFilter(files);
+  const selectedFiles = useMemo(() => filesFilter(files), [files]);
 
   const whichRelease = (type: number) => {
     let letter = "";
