@@ -31,6 +31,37 @@
   .user-reset p {
     margin-bottom: 1rem;
   }
+  .user-reset h1 {
+    font-size: 2.8rem;
+    font-weight: 400;
+  }
+  .user-reset h2 {
+    font-size: 2.4rem;
+    font-weight: 400;
+  }
+  .user-reset h3 {
+    font-size: 1.6rem;
+    font-weight: 400;
+  }
+  .user-reset h4 {
+    font-size: 1.6rem;
+    font-weight: 400;
+  }
+  .user-reset h5 {
+    font-size: 1.6rem;
+    font-weight: 400;
+  }
+  .user-reset h6 {
+    font-size: 1.2rem;
+    font-weight: 400;
+  }
+  .user-reset .spoiler {
+    padding: 1rem;
+    border-radius: 0.5rem;
+    margin-bottom: 0.5rem;
+    border-width: 1px;
+    @apply border-tertiary;
+  }
 }
 
 @layer components {
@@ -47,7 +78,7 @@
     @apply bg-accent pr-8;
   }
   .pack-link {
-    @apply text-xl tracking-wider font-semibold py-3 px-5 flex gap-2 lt-2xl:text-lg small-case bg-tertiary rounded-xl shadow-xs shadow-tertiary justify-center;
+    @apply text-xl tracking-wider font-semibold py-3 px-5 flex gap-2 lt-2xl:text-lg small-case bg-tertiary rounded-xl shadow-xs shadow-tertiary justify-center transition duration-300;
   }
 }
 

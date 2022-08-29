@@ -1,4 +1,5 @@
 import Background from "@components/Background";
+import { Description } from "@components/pack";
 import PackItem from "@components/PackItem";
 import { SidebarFiles } from "@components/sidebar";
 import { client } from "@forged/apollo";
@@ -11,56 +12,79 @@ import { GetServerSidePropsContext, NextPage } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
+import { useState } from "react";
 
 interface Props {
   mod: CompleteMod;
 }
 
-const parseDescriptionLinks = (description: string) => {
-  const _dUri = (text: string) => decodeURIComponent(decodeURIComponent(text));
-  let desc = description;
-  const matches = description.match(
-    /href="\/linkout\?remoteUrl=([\w+\S]+)\"/gm
-  );
-  matches?.forEach(match => {
-    desc = desc.replace(
-      match,
-      _dUri(
-        match.replace(
-          /href="\/linkout\?remoteUrl=([\w+\S]+)\"/,
-          `href="$1" target="_blank"`
-        )
-      )
-    );
-  });
-  return desc;
-};
+type Categories =
+  | "description"
+  | "files"
+  | "images"
+  | "dependencies"
+  | "relations";
 
 const CategorieItemPage: NextPage<Props> = ({ mod }) => {
   const router = useRouter();
+
+  const [subCategory, setSubCategory] = useState<Categories>("description");
 
   return (
     <>
       <div className="flex">
         <div className="w-72 sticky top-[76px] h-full bg-s-alt bg-opacity-95 border-b border-tertiary">
           <nav className="flex flex-col justify-center gap-8 py-4 px-8 sticky top-[76px] h-[calc(100vh_-_76px)]">
-            <button className="pack-link mb-12 items-center">
+            {/* <button className="pack-link mb-12 items-center">
               <i className="icon-iconly-outline-arrow-left-square text-2xl" />
               <span>Hide</span>
-            </button>
+            </button> */}
 
-            <Link href={`/${router.query.category}/${router.query.slug}/files`}>
-              <a className="pack-link">All Files</a>
-            </Link>
-            <a href="#a" className="pack-link">
+            <button
+              className={`pack-link ${
+                subCategory === "description" &&
+                "bg-accent bg-opacity-95 shadow-accent"
+              }`}
+              onClick={() => setSubCategory("description")}
+            >
+              Description
+            </button>
+            <button
+              className={`pack-link ${
+                subCategory === "files" &&
+                "bg-accent bg-opacity-95 shadow-accent"
+              }`}
+              onClick={() => setSubCategory("files")}
+            >
+              All Files
+            </button>
+            <button
+              className={`pack-link ${
+                subCategory === "images" &&
+                "bg-accent bg-opacity-95 shadow-accent"
+              }`}
+              onClick={() => setSubCategory("images")}
+            >
               Images
-            </a>
-            <a href="#a" className="pack-link">
-              Dependency
-            </a>
-            <a href="#a" className="pack-link">
+            </button>
+            <button
+              className={`pack-link ${
+                subCategory === "dependencies" &&
+                "bg-accent bg-opacity-95 shadow-accent"
+              }`}
+              onClick={() => setSubCategory("dependencies")}
+            >
+              Dependencies
+            </button>
+            <button
+              className={`pack-link ${
+                subCategory === "relations" &&
+                "bg-accent bg-opacity-95 shadow-accent"
+              }`}
+              onClick={() => setSubCategory("relations")}
+            >
               Relations
-            </a>
+            </button>
             <a
               href={`https://www.curseforge.com/minecraft/${router.query.category}/${router.query.slug}`}
               className="pack-link"
@@ -86,12 +110,9 @@ const CategorieItemPage: NextPage<Props> = ({ mod }) => {
             </h1>
           </div>
 
-          <div
-            dangerouslySetInnerHTML={{
-              __html: parseDescriptionLinks(mod.description),
-            }}
-            className="p-4 border-2 border-t-alt bg-t-alt bg-opacity-30 shadow-xs shadow-tertiary user-reset"
-          />
+          {subCategory === "description" && (
+            <Description description={mod.description} />
+          )}
         </section>
 
         <aside className="bg-s-alt bg-opacity-95 border-b border-tertiary flex flex-col mb-auto gap-8 p-4 sticky top-[76px] w-72 h-full max-h-[calc(100vh_-_76px)] overflow-auto">
@@ -151,9 +172,11 @@ const CategorieItemPage: NextPage<Props> = ({ mod }) => {
                 {mod.authors.map(author => (
                   <p className="flex items-center gap-2" key={author.id}>
                     <i className="icon-iconly-bold-profile text-xl" />
-                    <span className="mt-[0.25rem] font-bold">
-                      {author.name}
-                    </span>
+                    <a href={author.url} target="_blank" rel="noreferrer">
+                      <span className="mt-[0.25rem] font-bold">
+                        {author.name}
+                      </span>
+                    </a>
                   </p>
                 ))}
               </div>
