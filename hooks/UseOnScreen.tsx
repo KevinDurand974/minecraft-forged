@@ -1,6 +1,6 @@
 import { RefObject, useEffect, useState } from "react";
 
-export const useOneScreen = (
+export const useOnScreen = (
   ref: RefObject<HTMLElement>,
   observerOptions?: IntersectionObserverInit
 ) => {
