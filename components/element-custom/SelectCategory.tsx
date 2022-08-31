@@ -10,10 +10,11 @@ type ComplexValues = {
 
 interface Props {
   value: ComplexValues;
+  currentValues?: string[];
   onClick: (value: string) => void;
 }
 
-const SelectCategory: FC<Props> = ({ value, onClick }) => {
+const SelectCategory: FC<Props> = ({ value, onClick, currentValues }) => {
   const [showSubValues, setShowSubValues] = useState(true);
 
   return (
@@ -34,9 +35,22 @@ const SelectCategory: FC<Props> = ({ value, onClick }) => {
           !showSubValues && "hidden"
         }`}
       >
-        {value.values.map(subvalue => (
-          <SelectButton key={subvalue} value={subvalue} onClick={onClick} />
-        ))}
+        {value.values.map(subvalue => {
+          if (currentValues?.length) {
+            return (
+              <SelectButton
+                key={subvalue}
+                value={subvalue}
+                onClick={onClick}
+                status={currentValues.includes(subvalue)}
+              />
+            );
+          } else {
+            return (
+              <SelectButton key={subvalue} value={subvalue} onClick={onClick} />
+            );
+          }
+        })}
       </div>
     </div>
   );
