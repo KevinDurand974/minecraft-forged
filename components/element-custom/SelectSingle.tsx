@@ -1,5 +1,6 @@
 import { ArrowBoldDown, Close } from "@components/icons";
-import { FC, useEffect, useRef, useState } from "react";
+import { FC, useEffect, useMemo, useRef, useState } from "react";
+import { BehaviorSubject, debounceTime, Observable, Subscription } from "rxjs";
 
 import SelectButton from "./SelectButton";
 import SelectCategory from "./SelectCategory";
@@ -13,14 +14,27 @@ type ComplexValues = {
 
 interface Props {
   values: (BasicValues | ComplexValues)[];
+  defaultValue?: string;
   onChange?: (value: string) => void;
 }
 
-const SelectSingle: FC<Props> = ({ values, onChange }) => {
+const SelectSingle: FC<Props> = ({ values, onChange, defaultValue = "" }) => {
+  // Memo
+  const savedParameters = useMemo(() => values, [values]);
+
   // State
+  const [parameters, setParameters] = useState(savedParameters);
   const [isBoxSelectOpen, setIsBoxSelectOpen] = useState(false);
-  const [selectedValue, setSelectedValue] = useState("");
-  const [inputValue, setInputValue] = useState("");
+  const [selectedValue, setSelectedValue] = useState(defaultValue);
+  const [selectedOldValue, setSelectedOldValue] = useState(defaultValue);
+  const [inputValue, setInputValue] = useState(defaultValue);
+  const [inputOldValue, setInputOldValue] = useState(defaultValue);
+
+  // BehaviorSubject
+  const $selectedData = new BehaviorSubject<string>(
+    selectedValue
+  ).asObservable();
+  const $inputValue = new BehaviorSubject<string>(inputValue).asObservable();
 
   // Ref
   const boxRef = useRef<HTMLDivElement>(null);
@@ -29,18 +43,22 @@ const SelectSingle: FC<Props> = ({ values, onChange }) => {
   const handleChoiceClick = (value: string) => {
     setSelectedValue(value);
     setInputValue(value);
-    if (onChange) onChange(value);
     setIsBoxSelectOpen(false);
   };
 
   // Handler Reset click
   const handleResetClick = () => {
-    setSelectedValue("");
-    setInputValue("");
-    if (onChange) onChange("");
+    setSelectedValue(defaultValue);
+    setInputValue(defaultValue);
   };
 
-  // UseEffect
+  // Handler Input Focus
+  const handleInputFocus = () => {
+    setParameters(savedParameters);
+    setIsBoxSelectOpen(true);
+  };
+
+  // UseEffect - Handle click outside
   useEffect(() => {
     const handleClick = (event: any) => {
       if (boxRef.current && !boxRef.current.contains(event.target)) {
@@ -53,6 +71,73 @@ const SelectSingle: FC<Props> = ({ values, onChange }) => {
       document.removeEventListener("click", handleClick);
     };
   }, []);
+
+  // UseEffect - OnChange Event
+  useEffect(() => {
+    if (!onChange) return;
+    if (selectedValue === selectedOldValue) return;
+    const $sub = $selectedData.pipe(debounceTime(200)).subscribe(values => {
+      setSelectedOldValue(values);
+      onChange(values.length > 0 ? values : "");
+    });
+    return () => {
+      $sub.unsubscribe();
+    };
+  }, [$selectedData, onChange, selectedOldValue, selectedValue]);
+
+  // UseEffect - Input Change Event
+  useEffect(() => {
+    const $preSub = $inputValue.pipe(debounceTime(150));
+    const $sub = $preSub.subscribe(inputText => {
+      if (inputText !== inputOldValue) {
+        if (savedParameters.every(value => typeof value === "string")) {
+          if (
+            savedParameters.some(value =>
+              (value as BasicValues).includes(inputText)
+            )
+          ) {
+            console.log("Writed");
+            const filtered = (savedParameters as BasicValues[]).filter(value =>
+              value.toLowerCase().includes(inputText.toLowerCase())
+            );
+            setParameters(filtered);
+            setInputOldValue(inputText);
+          } else {
+            setParameters([]);
+          }
+        } else {
+          const matchInputText = (savedParameters as ComplexValues[]).some(
+            value => {
+              if (typeof value === "string") {
+                return (value as BasicValues)
+                  .toLowerCase()
+                  .includes(inputText.toLowerCase());
+              }
+              return (value as ComplexValues).values.some(v =>
+                v.toLowerCase().includes(inputText.toLowerCase())
+              );
+            }
+          );
+          if (matchInputText) {
+            const filtered = filterWithObject(
+              savedParameters as ComplexValues[],
+              inputValue
+            ).filter(value => {
+              if (typeof value === "string")
+                return value.toLowerCase().includes(inputValue.toLowerCase());
+              return value.values.length > 0;
+            });
+            setParameters(filtered);
+            setInputOldValue(inputText);
+          }
+        }
+      }
+    });
+
+    return () => {
+      $sub.unsubscribe();
+    };
+  }, [$inputValue, inputOldValue, inputValue, savedParameters]);
 
   // Custom Filter for complex values
   const filterWithObject = (
@@ -81,38 +166,6 @@ const SelectSingle: FC<Props> = ({ values, onChange }) => {
     });
   };
 
-  // Create appropriate HTML structure
-  let list = null;
-  if (values.every(value => typeof value === "string")) {
-    // Only basic values
-    list = (values as BasicValues[])
-      .filter(value => {
-        return value.toLowerCase().includes(inputValue.toLowerCase());
-      })
-      .map(value => (
-        <SelectButton key={value} value={value} onClick={handleChoiceClick} />
-      ));
-  } else {
-    // Complex values
-    list = filterWithObject(values as ComplexValues[], inputValue)
-      .filter(value => {
-        if (typeof value === "string")
-          return value.toLowerCase().includes(inputValue.toLowerCase());
-        return value.values.length > 0;
-      })
-      .map((value, index) =>
-        typeof value === "string" ? (
-          <SelectButton key={value} value={value} onClick={handleChoiceClick} />
-        ) : (
-          <SelectCategory
-            key={index}
-            value={value}
-            onClick={handleChoiceClick}
-          />
-        )
-      );
-  }
-
   return (
     <div
       ref={boxRef}
@@ -124,14 +177,14 @@ const SelectSingle: FC<Props> = ({ values, onChange }) => {
             inputValue !== selectedValue && inputValue !== "" && "opacity-0"
           }`}
         >
-          {selectedValue === "" || inputValue === ""
+          {defaultValue === "" || selectedValue === "" || inputValue === ""
             ? "Select..."
             : selectedValue}
         </span>
         <input
           type="text"
           className={`w-full min-h-[32px] bg-transparent border-none outline-offset-4`}
-          onFocus={() => setIsBoxSelectOpen(true)}
+          onFocus={handleInputFocus}
           value={inputValue}
           onChange={e => setInputValue(e.target.value)}
         />
@@ -143,7 +196,7 @@ const SelectSingle: FC<Props> = ({ values, onChange }) => {
         >
           <Close className="fill-normal w-4" />
         </button>
-        <div className="h-2/3 w-[2px] bg-normal" />
+        <div className="h-7 w-[2px] bg-normal" />
         <button
           className="h-8 w-8 flex items-center justify-center"
           onClick={() => setIsBoxSelectOpen(!isBoxSelectOpen)}
@@ -160,7 +213,35 @@ const SelectSingle: FC<Props> = ({ values, onChange }) => {
           !isBoxSelectOpen && "hidden"
         }`}
       >
-        {list}
+        {parameters.length > 0 ? (
+          parameters.every(value => typeof value === "string") ? (
+            (parameters as BasicValues[]).map(value => (
+              <SelectButton
+                key={value}
+                value={value}
+                onClick={handleChoiceClick}
+              />
+            ))
+          ) : (
+            (parameters as ComplexValues[]).map((value, index) =>
+              typeof value === "string" ? (
+                <SelectButton
+                  key={value}
+                  value={value}
+                  onClick={handleChoiceClick}
+                />
+              ) : (
+                <SelectCategory
+                  key={index}
+                  value={value}
+                  onClick={handleChoiceClick}
+                />
+              )
+            )
+          )
+        ) : (
+          <div className="p-3 text-left bg-transparent">No results</div>
+        )}
       </div>
     </div>
   );

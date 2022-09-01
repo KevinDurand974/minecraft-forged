@@ -3,10 +3,11 @@ import { FC } from "react";
 interface Props {
   value: string;
   status?: boolean;
+  defaultValue?: string;
   onClick: (value: string) => void;
 }
 
-const SelectButton: FC<Props> = ({ value, onClick, status }) => {
+const SelectButton: FC<Props> = ({ value, onClick, status, defaultValue }) => {
   const handleClick = (value: string) => {
     onClick(value);
   };
@@ -18,7 +19,7 @@ const SelectButton: FC<Props> = ({ value, onClick, status }) => {
       onClick={() => handleClick(value)}
     >
       <span>{value}</span>
-      {status && (
+      {(status || (defaultValue === value && status)) && (
         <span className="text-xs text-accent pointer-events-none font-semibold tracking-wide">
           Remove
         </span>

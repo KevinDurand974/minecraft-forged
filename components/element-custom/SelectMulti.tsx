@@ -1,5 +1,6 @@
 import { ArrowBoldDown, Close } from "@components/icons";
 import { FC, useEffect, useMemo, useRef, useState } from "react";
+import { BehaviorSubject, debounceTime } from "rxjs";
 
 import SelectButton from "./SelectButton";
 import SelectCategory from "./SelectCategory";
@@ -13,10 +14,11 @@ type ComplexValues = {
 
 interface Props {
   values: (BasicValues | ComplexValues)[];
+  defaultValue?: string;
   onChange?: (value: string[]) => void;
 }
 
-const SelectMulti: FC<Props> = ({ values, onChange }) => {
+const SelectMulti: FC<Props> = ({ values, onChange, defaultValue = "" }) => {
   // Custom Filter for complex values
   const filterWithObject = (
     values: (BasicValues | ComplexValues)[],
@@ -44,40 +46,36 @@ const SelectMulti: FC<Props> = ({ values, onChange }) => {
     });
   };
 
-  const removeFilterFromObject = (
-    values: (BasicValues | ComplexValues)[],
-    filter: string
-  ): (BasicValues | ComplexValues)[] => {
-    // Remove filter from BasicValues
-    if (values.every(value => typeof value === "string")) {
-      return values.filter(value => value !== filter);
-    }
-    // Remove filter from ComplexValues
-    return values
-      .map(value => {
-        if (typeof value === "object") {
-          return {
-            ...value,
-            values: value.values.filter(v => v !== filter),
-          };
-        }
-        return value;
-      })
-      .filter(value => {
-        if (typeof value === "string")
-          return value.toLowerCase().includes(inputValue.toLowerCase());
-        return value.values.length > 0;
-      });
+  // Compare 2 arrays
+  const arrayEqual = (a: string[], b: string[]) => {
+    if (a.length !== b.length) return false;
+    return a.every(value => b.includes(value));
   };
 
+  // Memo
+  const choiceArray = useMemo(() => values, [values]);
+  const baseValues = useMemo(() => {
+    return choiceArray
+      .map(value => {
+        if (typeof value === "string") return value;
+        return value.values;
+      })
+      .flat(2);
+  }, [choiceArray]);
+
   // State
-  const oldValues = useMemo(() => values, [values]);
-  const [choiceArray, setChoiceArray] =
-    useState<(BasicValues | ComplexValues)[]>(oldValues);
   const [isBoxSelectOpen, setIsBoxSelectOpen] = useState(false);
-  const [selectedValue, setSelectedValue] = useState<string[]>([]);
+  const [selectedValue, setSelectedValue] = useState<string[]>([defaultValue]);
+  const [selectedOldValue, setSelectedOldValue] = useState<string[]>([
+    defaultValue,
+  ]);
   const [inputValue, setInputValue] = useState("");
   const [isClickOutsideActive, setClickOutsideBoolan] = useState(false);
+
+  // BehaviorSubject
+  const $selectedData = new BehaviorSubject<string[]>(
+    selectedValue
+  ).asObservable();
 
   // Ref
   const boxRef = useRef<HTMLDivElement>(null);
@@ -86,38 +84,37 @@ const SelectMulti: FC<Props> = ({ values, onChange }) => {
   const handleChoiceClick = (value: string) => {
     if (selectedValue.includes(value)) {
       setSelectedValue(pre => {
-        const newSelectedValue = pre.filter(v => v !== value);
-        if (onChange) onChange(newSelectedValue);
-        return newSelectedValue;
+        const rest = pre.filter(v => v !== value);
+        if (rest.length === 0) {
+          return [defaultValue];
+        }
+        return rest;
       });
     } else {
-      setSelectedValue(pre => {
-        const newSelectedValue = [...pre, value];
-        if (onChange) onChange(newSelectedValue);
-        return newSelectedValue;
-      });
+      setSelectedValue(pre => [...pre, value]);
     }
     setInputValue("");
   };
 
   // Handler Reset click
   const handleResetClick = () => {
-    setSelectedValue([]);
+    setSelectedValue([defaultValue]);
     setInputValue("");
-    if (onChange) onChange([]);
   };
 
   // Handler Remove click
   const handleRemoveValue = (value: string) => {
     setClickOutsideBoolan(true);
     setSelectedValue(pre => {
-      const newSelectedValue = pre.filter(v => v !== value);
-      if (onChange) onChange(newSelectedValue);
-      return newSelectedValue;
+      const rest = pre.filter(v => v !== value);
+      if (rest.length === 0) {
+        return [defaultValue];
+      }
+      return rest;
     });
   };
 
-  // UseEffect
+  // UseEffect - Handle click outside
   useEffect(() => {
     const handleClick = (event: any) => {
       if (boxRef.current && !boxRef.current.contains(event.target)) {
@@ -135,6 +132,19 @@ const SelectMulti: FC<Props> = ({ values, onChange }) => {
     };
   }, [boxRef, isClickOutsideActive]);
 
+  // UseEffect - OnChange Event
+  useEffect(() => {
+    if (!onChange) return;
+    if (arrayEqual(selectedValue, selectedOldValue)) return;
+    const $sub = $selectedData.pipe(debounceTime(200)).subscribe(values => {
+      setSelectedOldValue(values);
+      onChange(values.length > 0 ? values : baseValues);
+    });
+    return () => {
+      $sub.unsubscribe();
+    };
+  }, [$selectedData, baseValues, onChange, selectedOldValue, selectedValue]);
+
   // Create appropriate HTML structure
   let list = null;
   if (choiceArray.every(value => typeof value === "string")) {
@@ -147,6 +157,7 @@ const SelectMulti: FC<Props> = ({ values, onChange }) => {
         <SelectButton
           key={value}
           value={value}
+          defaultValue={defaultValue}
           onClick={handleChoiceClick}
           status={selectedValue.includes(value)}
         />
@@ -164,6 +175,7 @@ const SelectMulti: FC<Props> = ({ values, onChange }) => {
           <SelectButton
             key={value}
             value={value}
+            defaultValue={defaultValue}
             onClick={handleChoiceClick}
             status={selectedValue.includes(value)}
           />
@@ -171,6 +183,7 @@ const SelectMulti: FC<Props> = ({ values, onChange }) => {
           <SelectCategory
             key={index}
             value={value}
+            defaultValue={defaultValue}
             currentValues={selectedValue}
             onClick={handleChoiceClick}
           />
@@ -220,7 +233,7 @@ const SelectMulti: FC<Props> = ({ values, onChange }) => {
         >
           <Close className="fill-normal w-4" />
         </button>
-        <div className="h-2/3 w-[2px] bg-normal" />
+        <div className="h-7 w-[2px] bg-normal" />
         <button
           className="h-8 w-8 flex items-center justify-center"
           onClick={() => setIsBoxSelectOpen(!isBoxSelectOpen)}
