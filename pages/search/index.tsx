@@ -27,7 +27,7 @@ import {
   Pagination,
   SearchArgs,
 } from "@forged/types";
-import { useOneScreen } from "hooks/UseOnScreen";
+import { useOnScreen } from "hooks/UseOnScreen";
 import { GetServerSidePropsContext, NextPage } from "next";
 import Head from "next/head";
 import { Fragment, useEffect, useRef, useState } from "react";
@@ -148,7 +148,7 @@ const SearchPage: NextPage<Props> = ({
   const { refetch } = useQuery(query);
 
   const isTriggerFetchVisible$ = new BehaviorSubject(
-    useOneScreen(packRef, {
+    useOnScreen(packRef, {
       rootMargin: "0px 0px 300px 0px",
       threshold: 0.1,
     })

@@ -58,6 +58,11 @@ const SelectSingle: FC<Props> = ({ values, onChange, defaultValue = "" }) => {
     setIsBoxSelectOpen(true);
   };
 
+  const handleOpenCloseBox = () => {
+    if (isBoxSelectOpen) setIsBoxSelectOpen(false);
+    else handleInputFocus();
+  };
+
   // UseEffect - Handle click outside
   useEffect(() => {
     const handleClick = (event: any) => {
@@ -199,7 +204,7 @@ const SelectSingle: FC<Props> = ({ values, onChange, defaultValue = "" }) => {
         <div className="h-7 w-[2px] bg-normal" />
         <button
           className="h-8 w-8 flex items-center justify-center"
-          onClick={() => setIsBoxSelectOpen(!isBoxSelectOpen)}
+          onClick={handleOpenCloseBox}
         >
           <ArrowBoldDown
             className={`fill-normal w-4 transition duration-300 ${
@@ -209,7 +214,7 @@ const SelectSingle: FC<Props> = ({ values, onChange, defaultValue = "" }) => {
         </button>
       </div>
       <div
-        className={`absolute -left-0.5 -right-0.5 top-full border-2 border-normal flex flex-col bg-secondary max-h-72 overflow-auto ${
+        className={`absolute z-100 -left-0.5 -right-0.5 top-full border-2 border-normal flex flex-col bg-secondary max-h-72 overflow-auto ${
           !isBoxSelectOpen && "hidden"
         }`}
       >

@@ -246,7 +246,7 @@ const SelectMulti: FC<Props> = ({ values, onChange, defaultValue = "" }) => {
         </button>
       </div>
       <div
-        className={`absolute -left-0.5 -right-0.5 top-full border-2 border-normal flex flex-col bg-secondary max-h-72 overflow-auto ${
+        className={`absolute z-100 -left-0.5 -right-0.5 top-full border-2 border-normal flex flex-col bg-secondary max-h-72 overflow-auto ${
           !isBoxSelectOpen && "hidden"
         }`}
       >
