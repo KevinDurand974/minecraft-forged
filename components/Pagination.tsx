@@ -46,8 +46,8 @@ const Pagination: FC<Props> = ({
         );
       }
     } else {
-      if (currentPage < 5) {
-        for (let i = 0; i < 5; i++) {
+      if (currentPage < 6) {
+        for (let i = 0; i < 7; i++) {
           list.push(
             <button
               key={i}
@@ -71,7 +71,7 @@ const Pagination: FC<Props> = ({
             {nbPage}
           </button>
         );
-      } else if (currentPage > nbPage - 4) {
+      } else if (currentPage > nbPage - 5) {
         list.push(
           <button onClick={() => handlePageClick(0)} className={buttonStyle}>
             1
@@ -82,7 +82,7 @@ const Pagination: FC<Props> = ({
             ...
           </span>
         );
-        for (let i = nbPage - 5; i < nbPage; i++) {
+        for (let i = nbPage - 7; i < nbPage; i++) {
           list.push(
             <button
               key={i}
@@ -138,17 +138,17 @@ const Pagination: FC<Props> = ({
       <button
         onClick={() => handlePageClick(currentPage - 2)}
         disabled={currentPage - 2 < 0}
-        className="p-2 border-2 border-normal font-semibold rounded-md min-w-[3.25rem] min-h-[3.25rem] text-1xl flex items-center justify-center"
+        className="p-2 border-2 border-normal font-semibold rounded-md min-w-[3.25rem] min-h-[3.25rem] text-1xl flex items-center justify-center group disabled:border-muted disabled:opacity-25"
       >
-        <ArrowBoldDown className="fill-normal rotate-90 w-5" />
+        <ArrowBoldDown className="fill-normal group-disabled:fill-muted rotate-90 w-5" />
       </button>
       {pageList}
       <button
         onClick={() => handlePageClick(currentPage)}
         disabled={currentPage + 1 > nbPage}
-        className="p-2 border-2 border-normal font-semibold rounded-md min-w-[3.25rem] min-h-[3.25rem] text-1xl flex items-center justify-center"
+        className="p-2 border-2 border-normal font-semibold rounded-md min-w-[3.25rem] min-h-[3.25rem] text-1xl flex items-center justify-center group disabled:border-muted disabled:opacity-25"
       >
-        <ArrowBoldDown className="fill-normal -rotate-90 w-5" />
+        <ArrowBoldDown className="fill-normal group-disabled:fill-muted -rotate-90 w-5" />
       </button>
     </div>
   );

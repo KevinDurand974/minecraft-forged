@@ -1,4 +1,4 @@
-import { File } from "@forged/graphql/schema";
+import { File } from "@forged/types";
 import { FC, useCallback, useEffect, useRef } from "react";
 
 interface Props {
@@ -83,7 +83,7 @@ const FileLatest: FC<Props> = ({ files }) => {
         ref={descriptionRef}
         dangerouslySetInnerHTML={{
           __html: parseSpoilerDescription(
-            parseDescriptionLinks(files[0].changelog!)
+            parseDescriptionLinks(decodeURI(files[0].changelog!))
           ),
         }}
         className="max-h-60 overflow-auto user-reset p-4 border-2 border-accent border-opacity-75"

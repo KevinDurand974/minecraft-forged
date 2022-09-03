@@ -1,12 +1,13 @@
-import { ReactNode } from "react";
-
-import { ModLoaderType, ModsSearchSortField, SortOrder } from "./curseforge";
+import {
+  File,
+  Mod,
+  ModLoaderType,
+  ModsSearchSortField,
+  Pagination,
+  SortOrder,
+} from "./curseforge";
 
 export * from "./curseforge";
-
-export interface ChildrenProps {
-  children?: ReactNode;
-}
 
 export interface GameVersion {
   version: string;
@@ -31,3 +32,22 @@ export interface SearchArgs {
 export type DisplayFilter = "tiles" | "rows";
 
 export type BasicCFSearchPage = "modpacks" | "mods" | "resource-packs";
+
+export type CompleteMod = Mod & {
+  description: string;
+  files: File[];
+};
+
+export type Mods = {
+  mods: Mod[];
+  pagination?: Pagination;
+};
+
+export type Version = {
+  version: string;
+  list: string[];
+};
+
+export type ModLoader = {
+  name: ModLoaderType;
+};

@@ -1,8 +1,7 @@
-import { ChildrenProps } from "@forged/types";
 import { useDisableBodyScroll } from "hooks/useDisableBodyScroll";
-import { FC, useEffect, useState } from "react";
+import { FC, PropsWithChildren, useEffect, useState } from "react";
 
-interface Props extends ChildrenProps {
+interface Props extends PropsWithChildren {
   show: boolean;
   title: string;
   onClose?: () => void;

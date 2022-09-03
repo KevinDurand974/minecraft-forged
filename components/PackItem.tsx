@@ -1,7 +1,6 @@
-import { ChildrenProps } from "@forged/types";
-import { FC } from "react";
+import { FC, PropsWithChildren } from "react";
 
-interface Props extends ChildrenProps {
+interface Props extends PropsWithChildren {
   title: string;
 }
 

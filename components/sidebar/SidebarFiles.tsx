@@ -1,6 +1,6 @@
 import PackItem from "@components/PackItem";
 import ReleaseType from "@components/ReleaseType";
-import { File } from "@forged/graphql/schema";
+import { File } from "@forged/types";
 import { closestIndexTo, format } from "date-fns";
 import { FC, useMemo } from "react";
 

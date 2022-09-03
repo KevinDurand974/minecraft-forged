@@ -1,11 +1,10 @@
-import { ChildrenProps } from "@forged/types";
 import Head from "next/head";
-import { FC, Fragment } from "react";
+import { FC, Fragment, PropsWithChildren } from "react";
 
 import Footer from "./Footer";
 import Header from "./Header";
 
-const Layout: FC<ChildrenProps> = ({ children }) => {
+const Layout: FC<PropsWithChildren> = ({ children }) => {
   return (
     <Fragment>
       <Head>

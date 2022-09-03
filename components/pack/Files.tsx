@@ -3,7 +3,7 @@ import SelectSingle from "@components/element-custom/SelectSingle";
 import Pagination from "@components/Pagination";
 import ReleaseType from "@components/ReleaseType";
 import { getCFFileChanglog, maxItemPerPage } from "@forged/curseforge";
-import { File } from "@forged/graphql/schema";
+import { File } from "@forged/types";
 import { format, formatDistanceToNowStrict } from "date-fns";
 import Link from "next/link";
 import { useRouter } from "next/router";

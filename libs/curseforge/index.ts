@@ -1,9 +1,12 @@
 import axios from "axios";
 
+const API =
+  process.env.CURSEFORGE_API || process.env.NEXT_PUBLIC_CURSEFORGE_API;
+
 export const baseApi = axios.create({
   baseURL: "https://api.curseforge.com/v1",
   headers: {
-    "x-api-key": process.env.CURSEFORGE_API!,
+    "x-api-key": API!,
   },
   params: {
     gameId: 432,
@@ -13,7 +16,7 @@ export const baseApi = axios.create({
 export const baseApiClean = axios.create({
   baseURL: "https://api.curseforge.com/v1",
   headers: {
-    "x-api-key": process.env.CURSEFORGE_API!,
+    "x-api-key": API!,
   },
 });
 

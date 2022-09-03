@@ -2,13 +2,15 @@ import Background from "@components/Background";
 import { Description, Files } from "@components/pack";
 import PackItem from "@components/PackItem";
 import { SidebarFiles } from "@components/sidebar";
-import { client } from "@forged/apollo";
-import { modpackId, modsId, resourcepacksId } from "@forged/curseforge";
-import { CompleteMod } from "@forged/graphql/schema";
-import { SearchArgs } from "@forged/types";
-import { gql } from "apollo-server-micro";
+import {
+  getCompleteCFMod,
+  modpackId,
+  modsId,
+  resourcepacksId,
+} from "@forged/curseforge";
+import { CompleteMod, SearchArgs } from "@forged/types";
 import { format, formatDistanceToNowStrict } from "date-fns";
-import { GetServerSidePropsContext, NextPage } from "next";
+import { GetStaticPaths, GetStaticPropsContext, NextPage } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
@@ -25,7 +27,8 @@ type Categories =
   | "dependencies"
   | "relations";
 
-const CategorieItemPage: NextPage<Props> = ({ mod }) => {
+const CategorieItemPage: NextPage<Props> = props => {
+  const { mod } = props;
   const router = useRouter();
 
   const handleChangeTab = (value: Categories) => {
@@ -213,115 +216,114 @@ const CategorieItemPage: NextPage<Props> = ({ mod }) => {
   );
 };
 
-export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
+export const getStaticProps = async (ctx: GetStaticPropsContext) => {
   try {
-    // Prepare Query Arguments
-    const queryArguments: Partial<SearchArgs> = {};
+    // Prepare Fetch Arguments
+    const fetchArguments: Partial<SearchArgs> = {};
     switch (ctx.params!.category) {
       case "modpacks":
-        queryArguments["classId"] = modpackId;
+        fetchArguments["classId"] = modpackId;
         break;
       case "mods":
-        queryArguments["classId"] = modsId;
+        fetchArguments["classId"] = modsId;
         break;
       case "texture-packs":
-        queryArguments["classId"] = resourcepacksId;
+        fetchArguments["classId"] = resourcepacksId;
         break;
     }
-    queryArguments["slug"] = ctx.params!.slug as string;
+    fetchArguments["slug"] = ctx.params!.slug as string;
 
-    // Query Apollo
-    const { data } = await client.query({
-      query: gql`
-        query GetMod($args: CFSearchInput!) {
-          getMod(args: $args) {
-            id
-            name
-            slug
-            classId
-            links {
-              websiteUrl
-              wikiUrl
-              issuesUrl
-              sourceUrl
-            }
-            status
-            downloadCount
-            isFeatured
-            categories {
-              id
-              name
-              slug
-              iconUrl
-              isClass
-            }
-            authors {
-              id
-              name
-              url
-            }
-            logo {
-              id
-              modId
-              title
-              thumbnailUrl
-              url
-            }
-            screenshots {
-              id
-              title
-              thumbnailUrl
-              url
-            }
-            latestFilesIndexes {
-              gameVersion
-              fileId
-              filename
-              releaseType
-            }
-            dateCreated
-            dateModified
-            allowModDistribution
-            gamePopularityRank
-            description
-            files {
-              id
-              isAvailable
-              displayName
-              dependencies {
-                relationType
-                modId
-              }
-              changelog
-              fileName
-              releaseType
-              fileStatus
-              fileDate
-              fileLength
-              downloadCount
-              downloadUrl
-              isServerPack
-              gameVersions
-              modId
-            }
-          }
-        }
-      `,
-      variables: {
-        args: queryArguments,
+    const data = await getCompleteCFMod(fetchArguments);
+
+    if (!data) return { notFound: true };
+
+    const mod = {
+      id: data.id,
+      name: data.name,
+      slug: data.slug,
+      classId: data.classId,
+      links: {
+        websiteUrl: data.links.websiteUrl,
+        wikiUrl: data.links.wikiUrl,
+        issuesUrl: data.links.issuesUrl,
+        sourceUrl: data.links.sourceUrl,
       },
-    });
+      status: data.status,
+      downloadCount: data.downloadCount,
+      isFeatured: data.isFeatured,
+      categories: data.categories.map(cat => ({
+        id: cat.id,
+        name: cat.name,
+        slug: cat.slug,
+        iconUrl: cat.iconUrl,
+        isClass: cat.isClass,
+      })),
+      authors: data.authors.map(author => ({
+        id: author.id,
+        name: author.name,
+        url: author.url,
+      })),
+      logo: {
+        id: data.logo.id,
+        modId: data.logo.modId,
+        title: data.logo.title,
+        thumbnailUrl: data.logo.thumbnailUrl,
+        url: data.logo.url,
+      },
+      screenshots: data.screenshots.map(screenshot => ({
+        id: screenshot.id,
+        title: screenshot.title,
+        thumbnailUrl: screenshot.thumbnailUrl,
+        url: screenshot.url,
+      })),
+      latestFilesIndexes: data.latestFilesIndexes.map(file => ({
+        gameVersion: file.gameVersion,
+        fileId: file.fileId,
+        filename: file.filename,
+        releaseType: file.releaseType,
+      })),
+      dateCreated: data.dateCreated,
+      dateModified: data.dateModified,
+      allowModDistribution: data.allowModDistribution,
+      gamePopularityRank: data.gamePopularityRank,
+      description: data.description,
+      files: data.files.map(file => ({
+        id: file.id,
+        isAvailable: file.isAvailable,
+        displayName: file.displayName,
+        dependencies: file.dependencies.map(dep => ({
+          relationType: dep.relationType,
+          modId: dep.modId,
+        })),
+        changelog: encodeURI(file.changelog || ""),
+        fileName: file.fileName,
+        releaseType: file.releaseType,
+        fileStatus: file.fileStatus,
+        fileDate: file.fileDate,
+        fileLength: file.fileLength,
+        downloadCount: file.downloadCount,
+        downloadUrl: file.downloadUrl,
+        isServerPack: file.isServerPack,
+        gameVersions: file.gameVersions,
+        modId: file.modId,
+      })),
+    };
 
-    const mod: CompleteMod = data.getMod;
-
-    if (!mod) return { notFound: true };
     return {
       props: { mod },
+      revalidate: 7200,
     };
   } catch (error: any) {
     console.log(error.message);
     return { notFound: true };
   }
+};
+
+export const getStaticPaths: GetStaticPaths = async () => {
+  return {
+    paths: [],
+    fallback: "blocking",
+  };
 };
 
 export default CategorieItemPage;

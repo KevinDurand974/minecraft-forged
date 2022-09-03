@@ -24,6 +24,7 @@
     "react-dom": "18.2.0",
     "reflect-metadata": "^0.1.13",
     "rxjs": "^7.5.6",
+    "sharp": "^0.30.7",
     "tailwindcss-animation-delay": "^1.0.7",
     "type-graphql": "^1.1.1"
   },

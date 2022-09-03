@@ -1,5 +1,4 @@
-import { CompleteMod } from "@forged/graphql/schema";
-import { SearchArgs, SearchModsResponse } from "@forged/types";
+import { CompleteMod, SearchArgs, SearchModsResponse } from "@forged/types";
 
 import { baseApi, getCFModDescription, getCFModFiles, maxItemPerPage } from ".";
 
@@ -20,7 +19,6 @@ const getCFMods = async (
     if (!params.classId) {
       delete params.classId;
     }
-
     const response = await baseApi.get("mods/search", { params });
     const data: SearchModsResponse = response.data;
 
@@ -38,7 +36,6 @@ const getCFMods = async (
       });
       return { ...mod, categories };
     });
-
     return { ...data, data: ddata };
   } catch (err) {
     console.error(err);

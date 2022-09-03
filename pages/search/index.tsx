@@ -1,4 +1,4 @@
-import { DocumentNode, gql, useQuery } from "@apollo/client";
+import { DocumentNode, gql } from "@apollo/client";
 import Background from "@components/Background";
 import { Filter } from "@components/filters";
 import {
@@ -15,8 +15,13 @@ import {
 } from "@components/sidebar";
 import SidebarCategory from "@components/sidebar/SidebarCategories";
 import Sidenav from "@components/Sidenav";
-import { client } from "@forged/apollo";
-import { maxItemForAllPage, maxItemPerPage } from "@forged/curseforge";
+import {
+  getCFCategories,
+  getCFMods,
+  getMinecraftVersionList,
+  maxItemForAllPage,
+  maxItemPerPage,
+} from "@forged/curseforge";
 import {
   BasicCFSearchPage,
   Category,
@@ -28,9 +33,9 @@ import {
   SearchArgs,
 } from "@forged/types";
 import { useOnScreen } from "hooks/UseOnScreen";
-import { GetServerSidePropsContext, NextPage } from "next";
+import { NextPage } from "next";
 import Head from "next/head";
-import { Fragment, useEffect, useRef, useState } from "react";
+import { Fragment, useCallback, useEffect, useRef, useState } from "react";
 import { BehaviorSubject, debounceTime } from "rxjs";
 
 interface Props {
@@ -145,7 +150,18 @@ const SearchPage: NextPage<Props> = ({
 
   const packRef = useRef(null);
 
-  const { refetch } = useQuery(query);
+  const fetchCfMods = useCallback(async (args: Partial<SearchArgs>) => {
+    try {
+      const res = await getCFMods(null, args);
+      if (!res?.data.length) return { mods: [] };
+      return {
+        mods: res.data,
+        pagination: res.pagination,
+      };
+    } catch (err) {
+      return { mods: [] };
+    }
+  }, []);
 
   const isTriggerFetchVisible$ = new BehaviorSubject(
     useOnScreen(packRef, {
@@ -166,19 +182,13 @@ const SearchPage: NextPage<Props> = ({
           return false;
         setPackUpdate(true);
         try {
-          console.log(queryArg);
-          const { data } = await refetch({
-            args: queryArg,
-          });
-          setModpackArray(oldPacks => [
-            ...oldPacks,
-            ...(data.getSearch.mods as Mod[]),
-          ]);
+          const { mods } = await fetchCfMods(queryArg);
+          setModpackArray(oldPacks => [...oldPacks, ...(mods as Mod[])]);
           setQueryArg(oldQuery => ({
             ...oldQuery,
             index: oldQuery.index! + maxItemPerPage,
           }));
-          if (data.getSearch.mods.length % maxItemPerPage === 0) {
+          if (mods.length % maxItemPerPage === 0) {
             setPackNumber(num => num + maxItemPerPage);
           } else {
             setPackNumber(() => maxItemForAllPage + maxItemPerPage);
@@ -194,12 +204,12 @@ const SearchPage: NextPage<Props> = ({
       sub$.unsubscribe();
     };
   }, [
+    fetchCfMods,
     isTriggerFetchVisible$,
     packLoaded,
     packUpdate,
     paginationInfo,
     queryArg,
-    refetch,
   ]);
 
   // Handle Search
@@ -209,12 +219,10 @@ const SearchPage: NextPage<Props> = ({
       setPackUpdate(true);
 
       const newQueryArg = { ...queryArg, ...queryNewArg };
+      const { mods, pagination } = await fetchCfMods(newQueryArg);
 
-      const { data } = await refetch({
-        args: newQueryArg,
-      });
-      setModpackArray(() => data.getSearch.mods);
-      setPaginationInfo(() => data.getSearch.pagination);
+      setModpackArray(() => mods);
+      setPaginationInfo(() => pagination!);
       setQueryArg(() => ({ ...newQueryArg, index: maxItemPerPage }));
       setPackNumber(() => maxItemPerPage);
       setNewSearchLoaded(true);
@@ -237,20 +245,18 @@ const SearchPage: NextPage<Props> = ({
     }));
     setPackUpdate(true);
     setModpackArray([]);
-    const { data } = await refetch({
-      args: {
-        ...queryArg,
-        index: 0,
-        gameVersion: version === "all" ? "" : version,
-      },
+    const { mods, pagination } = await fetchCfMods({
+      ...queryArg,
+      index: 0,
+      gameVersion: version === "all" ? "" : version,
     });
     setPackNumber(() => maxItemPerPage);
     setQueryArg(pre => ({
       ...pre,
       index: pre.index! + maxItemPerPage,
     }));
-    setModpackArray(() => data.getSearch.mods);
-    setPaginationInfo(() => data.getSearch.pagination);
+    setModpackArray(() => mods);
+    setPaginationInfo(() => pagination!);
     setPackUpdate(false);
   };
   const handleFilterChoiceSortBy = async (sortby: ModsSearchSortField) => {
@@ -263,21 +269,19 @@ const SearchPage: NextPage<Props> = ({
     }));
     setPackUpdate(true);
     setModpackArray([]);
-    const { data } = await refetch({
-      args: {
-        ...queryArg,
-        index: 0,
-        sortField: sortby,
-        sortOrder: sortby === 4 ? "asc" : "desc",
-      },
+    const { mods, pagination } = await fetchCfMods({
+      ...queryArg,
+      index: 0,
+      sortField: sortby,
+      sortOrder: sortby === 4 ? "asc" : "desc",
     });
     setPackNumber(() => maxItemPerPage);
     setQueryArg(pre => ({
       ...pre,
       index: pre.index! + maxItemPerPage,
     }));
-    setModpackArray(() => data.getSearch.mods);
-    setPaginationInfo(() => data.getSearch.pagination);
+    setModpackArray(() => mods);
+    setPaginationInfo(() => pagination!);
     setPackUpdate(false);
   };
   const handleFilterChoiceCategory = async (category: number) => {
@@ -289,21 +293,18 @@ const SearchPage: NextPage<Props> = ({
     }));
     setPackUpdate(true);
     setModpackArray([]);
-    console.log(queryArg);
-    const { data } = await refetch({
-      args: {
-        ...queryArg,
-        index: 0,
-        classId: categoryArray.find(cat => cat.value === category)?.value,
-      },
+    const { mods, pagination } = await fetchCfMods({
+      ...queryArg,
+      index: 0,
+      classId: categoryArray.find(cat => cat.value === category)?.value,
     });
     setPackNumber(() => maxItemPerPage);
     setQueryArg(pre => ({
       ...pre,
       index: pre.index! + maxItemPerPage,
     }));
-    setModpackArray(() => data.getSearch.mods);
-    setPaginationInfo(() => data.getSearch.pagination);
+    setModpackArray(() => mods);
+    setPaginationInfo(() => pagination!);
     setPackUpdate(false);
   };
 
@@ -435,13 +436,37 @@ const SearchPage: NextPage<Props> = ({
   );
 };
 
-export const getServerSideProps = async () => {
+export const getStaticProps = async () => {
   try {
-    const { data } = await client.query({ query });
-    const packs: Mod[] = data.getSearch.mods;
-    const pagination: Pagination = data.getSearch.pagination;
-    const minecraftVersions: GameVersion[] = data.getVersions;
-    const minecraftCategories: Category[] = data.getCategories;
+    const res = await getCFMods(null, {});
+    if (!res?.data.length) return { notFound: true };
+
+    const packs = (res.data as Mod[]).map(
+      pack =>
+        ({
+          id: pack.id,
+          name: pack.name,
+          slug: pack.slug,
+          summary: pack.summary,
+          classId: pack.classId,
+          logo: {
+            id: pack.logo.id,
+            thumbnailUrl: pack.logo.thumbnailUrl,
+          },
+          downloadCount: pack.downloadCount,
+          dateModified: pack.dateModified,
+          dateCreated: pack.dateCreated,
+          categories: pack.categories.map(cat => ({
+            id: cat.id,
+            name: cat.name,
+            slug: cat.slug,
+            iconUrl: cat.iconUrl,
+          })),
+        } as Mod)
+    );
+    const pagination: Pagination = res.pagination;
+    const minecraftVersions = await getMinecraftVersionList();
+    const minecraftCategories = await getCFCategories();
 
     if (!packs.length) return { notFound: true };
 
