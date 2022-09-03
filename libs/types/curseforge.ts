@@ -72,6 +72,7 @@ export interface File {
   serverPackFileId?: number;
   fileFingerprint: number;
   modules: FileModule[];
+  changelog?: string;
 }
 
 export interface FileDependency {

@@ -17,8 +17,8 @@ export const baseApiClean = axios.create({
   },
 });
 
-const maxResult = 10; // 10000
-export const maxItemPerPage = 10;
+const maxResult = 100; // 10000
+export const maxItemPerPage = 20;
 export const maxPage = Math.ceil(maxResult / maxItemPerPage);
 export const maxItemForAllPage = maxPage * maxItemPerPage;
 
@@ -27,6 +27,7 @@ export const modsId = 6;
 export const resourcepacksId = 12;
 
 export * from "./category";
+export * from "./changelog";
 export * from "./modDescriptions";
 export * from "./modFiles";
 export * from "./searchCFMods";

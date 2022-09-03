@@ -1,5 +1,5 @@
 import Background from "@components/Background";
-import { Description } from "@components/pack";
+import { Description, Files } from "@components/pack";
 import PackItem from "@components/PackItem";
 import { SidebarFiles } from "@components/sidebar";
 import { client } from "@forged/apollo";
@@ -28,7 +28,26 @@ type Categories =
 const CategorieItemPage: NextPage<Props> = ({ mod }) => {
   const router = useRouter();
 
-  const [subCategory, setSubCategory] = useState<Categories>("description");
+  const handleChangeTab = (value: Categories) => {
+    if (value === "description") {
+      delete router.query.tab;
+      router.push(router, undefined, { shallow: true });
+    } else {
+      router.push(
+        {
+          pathname: router.pathname,
+          query: { ...router.query, tab: value },
+        },
+        undefined,
+        { shallow: true }
+      );
+    }
+    setSubCategory(value);
+  };
+
+  const [subCategory, setSubCategory] = useState(
+    router.query.tab || "description"
+  );
 
   return (
     <>
@@ -45,7 +64,7 @@ const CategorieItemPage: NextPage<Props> = ({ mod }) => {
                 subCategory === "description" &&
                 "bg-accent bg-opacity-95 shadow-accent"
               }`}
-              onClick={() => setSubCategory("description")}
+              onClick={() => handleChangeTab("description")}
             >
               Description
             </button>
@@ -54,7 +73,7 @@ const CategorieItemPage: NextPage<Props> = ({ mod }) => {
                 subCategory === "files" &&
                 "bg-accent bg-opacity-95 shadow-accent"
               }`}
-              onClick={() => setSubCategory("files")}
+              onClick={() => handleChangeTab("files")}
             >
               All Files
             </button>
@@ -63,7 +82,7 @@ const CategorieItemPage: NextPage<Props> = ({ mod }) => {
                 subCategory === "images" &&
                 "bg-accent bg-opacity-95 shadow-accent"
               }`}
-              onClick={() => setSubCategory("images")}
+              onClick={() => handleChangeTab("images")}
             >
               Images
             </button>
@@ -72,7 +91,7 @@ const CategorieItemPage: NextPage<Props> = ({ mod }) => {
                 subCategory === "dependencies" &&
                 "bg-accent bg-opacity-95 shadow-accent"
               }`}
-              onClick={() => setSubCategory("dependencies")}
+              onClick={() => handleChangeTab("dependencies")}
             >
               Dependencies
             </button>
@@ -81,7 +100,7 @@ const CategorieItemPage: NextPage<Props> = ({ mod }) => {
                 subCategory === "relations" &&
                 "bg-accent bg-opacity-95 shadow-accent"
               }`}
-              onClick={() => setSubCategory("relations")}
+              onClick={() => handleChangeTab("relations")}
             >
               Relations
             </button>
@@ -112,6 +131,9 @@ const CategorieItemPage: NextPage<Props> = ({ mod }) => {
 
           {subCategory === "description" && (
             <Description description={mod.description} />
+          )}
+          {subCategory === "files" && (
+            <Files files={mod.files} modId={mod.id} />
           )}
         </section>
 
@@ -270,6 +292,7 @@ export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
                 relationType
                 modId
               }
+              changelog
               fileName
               releaseType
               fileStatus
@@ -279,6 +302,7 @@ export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
               downloadUrl
               isServerPack
               gameVersions
+              modId
             }
           }
         }

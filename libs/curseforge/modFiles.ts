@@ -1,6 +1,6 @@
 import { File, GetModFilesResponse } from "@forged/types";
 
-import { baseApiClean } from ".";
+import { baseApiClean, getCFFileChanglog } from ".";
 
 const fetchFiles = async (modId: number, index = 0) => {
   const response = await baseApiClean(`mods/${modId}/files`, {
@@ -30,6 +30,10 @@ const getCFModFiles = async (modId: number) => {
       const res = await Promise.all(othersFiles);
       files = [...files, ...res.map(({ data }) => data).flat()];
     }
+
+    const lastFile = files[0];
+    const changelog = await getCFFileChanglog(modId, lastFile.id);
+    files[0]["changelog"] = changelog;
 
     return files;
   } catch (err) {

@@ -1,4 +1,5 @@
 import PackItem from "@components/PackItem";
+import ReleaseType from "@components/ReleaseType";
 import { File } from "@forged/graphql/schema";
 import { closestIndexTo, format } from "date-fns";
 import { FC, useMemo } from "react";
@@ -54,27 +55,6 @@ const filesFilter = (files: File[]) => {
 const SidebarFiles: FC<Props> = ({ files }) => {
   const selectedFiles = useMemo(() => filesFilter(files), [files]);
 
-  const whichRelease = (type: number) => {
-    let letter = "";
-    let classe =
-      "px-2 py-2 pt-3 font-bold rounded-lg flex justify-center items-center w-12 h-12";
-    switch (type) {
-      case 1:
-        letter = "R";
-        classe = classe + " bg-green-600";
-        break;
-      case 2:
-        letter = "B";
-        classe = classe + " bg-blue-600";
-        break;
-      case 3:
-        letter = "A";
-        classe = classe + " bg-gray-500";
-        break;
-    }
-    return <div className={classe}>{letter}</div>;
-  };
-
   return (
     <PackItem title={`File${files.length > 1 ? "s" : ""}`}>
       <div className="flex flex-col gap-4">
@@ -89,7 +69,7 @@ const SidebarFiles: FC<Props> = ({ files }) => {
               </h3>
               {selectedFiles.get(version)!.map(file => (
                 <div key={file.id} className="flex gap-2 items-center">
-                  {whichRelease(file.releaseType)}
+                  <ReleaseType type={file.releaseType} />
                   <div className="flex flex-col">
                     <h4 className="w-36 overflow-hidden text-ellipsis whitespace-nowrap text-xs">
                       {file.displayName}

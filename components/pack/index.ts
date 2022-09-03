@@ -1,3 +1,4 @@
 import Description from "./Description";
+import Files from "./Files";
 
-export { Description };
+export { Description, Files };

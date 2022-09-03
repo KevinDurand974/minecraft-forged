@@ -119,6 +119,9 @@ export class File {
 
   @Field(type => Boolean, { nullable: true })
   isServerPack?: boolean;
+
+  @Field(type => String, { nullable: true })
+  changelog?: string;
 }
 
 @ObjectType()
