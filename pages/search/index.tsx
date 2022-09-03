@@ -1,4 +1,3 @@
-import { DocumentNode, gql } from "@apollo/client";
 import Background from "@components/Background";
 import { Filter } from "@components/filters";
 import {
@@ -41,16 +40,10 @@ import { BehaviorSubject, debounceTime } from "rxjs";
 interface Props {
   category: BasicCFSearchPage;
   minecraftCategories: Category[];
-  query: QueryProps;
   mods: Mod[];
   pagination: Pagination;
   minecraftVersions: GameVersion[];
   page: PageProps;
-}
-
-interface QueryProps {
-  query: DocumentNode;
-  queryName: string;
 }
 
 interface PageProps {
@@ -64,47 +57,6 @@ interface Filters {
   sortby: ModsSearchSortField;
   category: number;
 }
-
-const query = gql`
-  query Query($args: CFSearchInput) {
-    getSearch(args: $args) {
-      mods {
-        id
-        name
-        slug
-        classId
-        summary
-        downloadCount
-        categories {
-          iconUrl
-          slug
-          name
-          id
-        }
-        logo {
-          thumbnailUrl
-        }
-        dateCreated
-        dateModified
-      }
-      pagination {
-        index
-        totalCount
-      }
-    }
-    getVersions {
-      version
-      list
-    }
-    getCategories {
-      id
-      name
-      slug
-      iconUrl
-      isClass
-    }
-  }
-`;
 
 const SearchPage: NextPage<Props> = ({
   mods,

@@ -1,4 +1,4 @@
-import { useDisableBodyScroll } from "hooks/useDisableBodyScroll";
+import { useDisableBodyScroll } from "hooks/UseDisableBodyScroll";
 import { FC, PropsWithChildren, useEffect, useState } from "react";
 
 interface Props extends PropsWithChildren {

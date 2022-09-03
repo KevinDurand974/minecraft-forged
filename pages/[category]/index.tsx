@@ -406,20 +406,20 @@ export const getStaticProps = async (ctx: GetStaticPropsContext) => {
     switch (category) {
       case "modpacks":
         data = { ...data, ...(await fetchCfMods(modpackId)) };
-        pageTitleVar = "Modpacks List";
+        pageTitleVar = "All modpacks availables";
         pageDescriptionVar =
           "Find your best Modpack in any version and play it easly!";
         break;
       case "mods":
         data = { ...data, ...(await fetchCfMods(modsId)) };
-        pageTitleVar = "Mods List";
+        pageTitleVar = "All mods availables";
         pageDescriptionVar =
           "Find your best mods in any version, had more fun to the history and play this new adventure!";
         break;
       case "resource-packs":
         data = { ...data, ...(await fetchCfMods(resourcepacksId)) };
-        pageTitleVar = "Resource Packs List";
-        pageDescriptionVar = "o/";
+        pageTitleVar = "All resource packs availables";
+        pageDescriptionVar = "Not a mod but a resource pack? Find it here!";
         break;
     }
 
